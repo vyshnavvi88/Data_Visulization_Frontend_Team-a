@@ -1,0 +1,6 @@
+{
+  "name": "AI Threat Detection KPI Cards",
+  "description": "KPI Cards module for AI-Assisted Threat Detection Dashboard calculating metrics dynamically from final_security_dataset.csv",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
