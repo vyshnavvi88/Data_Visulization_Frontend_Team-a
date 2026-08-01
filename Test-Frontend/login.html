@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Threat Detection Dashboard</title>
+    <!-- Import Inter Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Base Reset & Variables */
+        :root {
+            --bg-color: #030708;
+            --card-bg: rgba(10, 18, 20, 0.45);
+            --card-border: rgba(16, 185, 129, 0.12);
+            --card-border-focus: rgba(16, 185, 129, 0.4);
+            --text-primary: #ffffff;
+            --text-secondary: #8e9fa6;
+            --accent-mint: #10b981;
+            --accent-teal-dark: #032b2d;
+            --accent-teal-light: #a7f3d0;
+            --accent-blue: #007cc3;
+            --error-color: #ef4444;
+            --success-color: #10b981;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            position: relative;
+            padding: 20px;
+        }
+
+        /* Ambient Glowing Background Blobs */
+        .ambient-glow {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, rgba(0, 124, 195, 0.05) 50%, rgba(0,0,0,0) 70%);
+            filter: blur(60px);
+            z-index: 1;
+            pointer-events: none;
+            animation: pulse-glow 12s infinite alternate ease-in-out;
+        }
+
+        .glow-1 {
+            top: -10%;
+            right: -10%;
+        }
+
+        .glow-2 {
+            bottom: -15%;
+            left: -10%;
+            animation-delay: -6s;
+        }
+
+        @keyframes pulse-glow {
+            0% {
+                transform: scale(1) translate(0, 0);
+            }
+            100% {
+                transform: scale(1.15) translate(30px, 20px);
+            }
+        }
+
+        /* Container & Cards */
+        .auth-container {
+            width: 100%;
+            max-width: 440px;
+            z-index: 10;
+            animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 
+                        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Elegant card highlight line on top */
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-mint));
+        }
+
+        /* Branding and Typography */
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .brand-infosys {
+            color: var(--accent-blue);
+        }
+
+        .brand-dot {
+            width: 6px;
+            height: 6px;
+            background-color: var(--accent-mint);
+            border-radius: 50%;
+        }
+
+        .auth-header {
+            margin-bottom: 32px;
+        }
+
+        .auth-title {
+            font-size: 28px;
+            font-weight: 300;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+        }
+
+        .auth-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        /* Form Controls */
+        .form-group {
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            transition: color 0.3s ease;
+        }
+
+        .form-input {
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 14px 16px 14px 46px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 15px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            outline: none;
+        }
+
+        /* Special padding for password inputs to fit the eye icon */
+        .form-input-password {
+            padding-right: 48px;
+        }
+
+        .form-input:focus {
+            border-color: var(--card-border-focus);
+            background-color: rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.08);
+        }
+
+        .form-input:focus + .input-icon {
+            color: var(--accent-mint);
+        }
+
+        .btn-toggle-password {
+            position: absolute;
+            right: 14px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            border-radius: 4px;
+            transition: color 0.3s ease;
+        }
+
+        .btn-toggle-password:hover {
+            color: var(--text-primary);
+        }
+
+        /* Remember Me & Forgot Password Row */
+        .form-options {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+            font-size: 13.5px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            user-select: none;
+        }
+
+        .remember-checkbox {
+            appearance: none;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--card-border);
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .remember-checkbox:checked {
+            background-color: var(--accent-mint);
+            border-color: var(--accent-mint);
+        }
+
+        .remember-checkbox:checked::after {
+            content: '';
+            position: absolute;
+            width: 4px;
+            height: 8px;
+            border: solid black;
+            border-width: 0 2px 2px 0;
+            top: 2px;
+            left: 5px;
+            transform: rotate(45deg);
+        }
+
+        .forgot-password {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password:hover {
+            color: var(--accent-mint);
+        }
+
+        /* Buttons and CTAs */
+        .btn-submit {
+            width: 100%;
+            background-color: var(--accent-teal-dark);
+            color: var(--accent-teal-light);
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 16px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 15px rgba(3, 43, 45, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-submit:hover {
+            background-color: #053b3d;
+            color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2);
+        }
+
+        .btn-submit:active {
+            transform: translateY(1px);
+        }
+
+        /* Footer Link */
+        .auth-footer {
+            margin-top: 28px;
+            text-align: center;
+            font-size: 13.5px;
+            color: var(--text-secondary);
+        }
+
+        .auth-link {
+            color: var(--accent-mint);
+            text-decoration: none;
+            font-weight: 500;
+            transition: text-decoration 0.2s, color 0.2s;
+        }
+
+        .auth-link:hover {
+            color: var(--accent-teal-light);
+            text-decoration: underline;
+        }
+
+        /* Toast System */
+        .toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            border-radius: 10px;
+            padding: 16px 20px;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 400;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 300px;
+            max-width: 400px;
+            transform: translateX(120%);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: auto;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-success {
+            border-left: 4px solid var(--success-color);
+        }
+
+        .toast-error {
+            border-left: 4px solid var(--error-color);
+        }
+
+        .toast-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .toast-success .toast-icon {
+            color: var(--success-color);
+        }
+
+        .toast-error .toast-icon {
+            color: var(--error-color);
+        }
+
+        .toast-close {
+            margin-left: auto;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 2px;
+        }
+
+        .toast-close:hover {
+            color: var(--text-primary);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+
+        /* Responsive Layout fixes */
+        @media (max-width: 480px) {
+            .glass-card {
+                padding: 28px 20px;
+            }
+            .auth-title {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Ambient glow backdrops -->
+    <div class="ambient-glow glow-1"></div>
+    <div class="ambient-glow glow-2"></div>
+
+    <!-- Toast container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Main Auth Card -->
+    <main class="auth-container">
+        <div class="glass-card">
+            <!-- Branding -->
+            <div class="brand">
+                <span class="brand-infosys">Infosys</span>
+                <span class="brand-dot"></span>
+                <span>Security</span>
+            </div>
+
+            <!-- Header -->
+            <header class="auth-header">
+                <h1 class="auth-title">Welcome back</h1>
+                <p class="auth-subtitle">Enter your credentials to access the Dashboard</p>
+            </header>
+
+            <!-- Login Form -->
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <!-- Email or Username -->
+                <div class="form-group">
+                    <label for="identity" class="form-label">Email or Username</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">
+                            <!-- User SVG Icon -->
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        </span>
+                        <input type="text" id="identity" class="form-input" placeholder="Enter your email or username" required autocomplete="username">
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">
+                            <!-- Lock SVG Icon -->
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        </span>
+                        <input type="password" id="password" class="form-input form-input-password" placeholder="••••••••" required autocomplete="current-password">
+                        <button type="button" class="btn-toggle-password" id="passwordToggle" onclick="togglePasswordVisibility()" aria-label="Toggle Password Visibility">
+                            <!-- Eye Icon -->
+                            <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Remember Me & Forgot Password -->
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" id="rememberMe" class="remember-checkbox">
+                        Remember me
+                    </label>
+                    <a href="#" onclick="showForgotPasswordAlert(event)" class="forgot-password">Forgot Password?</a>
+                </div>
+
+                <!-- Login Button -->
+                <button type="submit" class="btn-submit">
+                    <span>Sign In</span>
+                    <!-- Arrow Right Icon -->
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </button>
+            </form>
+
+            <!-- Card Footer -->
+            <footer class="auth-footer">
+                Don't have an account? <a href="signup.html" class="auth-link">Create Account</a>
+            </footer>
+        </div>
+    </main>
+
+    <script>
+        // Check for success redirects from signup
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('registered') === 'true') {
+                const username = urlParams.get('username') || 'User';
+                showToast(`Success! Account created for ${username}. Please login.`, 'success');
+            }
+
+            // Route guard preview: if user already has an active session, redirect to dashboard.
+            const sessionUser = localStorage.getItem('currentUser');
+            if (sessionUser) {
+                // If they checked "Remember me", they stay logged in. 
+                // Let's redirect them to Dashboard automatically to enhance experience
+                showToast('Welcome back! Redirecting to Dashboard...', 'success');
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1000);
+            }
+        });
+
+        // Toggle Password visibility
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eyeIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                // Change to eye-off SVG icon
+                eyeIcon.innerHTML = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>`;
+            } else {
+                passwordInput.type = 'password';
+                // Change back to eye SVG icon
+                eyeIcon.innerHTML = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>`;
+            }
+        }
+
+        // Show toast system
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            
+            const icon = type === 'success' ? 
+                `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>` : 
+                `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`;
+
+            toast.innerHTML = `
+                <div class="toast-icon">${icon}</div>
+                <div>${message}</div>
+                <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
+            `;
+            
+            container.appendChild(toast);
+            
+            // Trigger animation frame for transition
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 10);
+
+            // Auto dismiss after 4 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    toast.remove();
+                }, 400);
+            }, 4000);
+        }
+
+        // Handle Form Submission
+        function handleLogin(event) {
+            event.preventDefault();
+            const identity = document.getElementById('identity').value.trim();
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+
+            // Load registered users from localStorage
+            const users = JSON.parse(localStorage.getItem('registered_users') || '[]');
+
+            // Check if there matches a user
+            const foundUser = users.find(u => 
+                (u.username.toLowerCase() === identity.toLowerCase() || u.email.toLowerCase() === identity.toLowerCase()) && 
+                u.password === password
+            );
+
+            if (foundUser) {
+                // Successful login
+                showToast('Authentication successful!', 'success');
+                
+                // Store active login session
+                const sessionData = {
+                    username: foundUser.username,
+                    email: foundUser.email,
+                    loginTime: new Date().toISOString()
+                };
+                localStorage.setItem('currentUser', JSON.stringify(sessionData));
+
+                // Redirect to dashboard after brief delay for visual feedback
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1200);
+            } else {
+                // Failed login
+                showToast('Invalid email/username or password.', 'error');
+            }
+        }
+
+        // Forgot password utility mock
+        function showForgotPasswordAlert(e) {
+            e.preventDefault();
+            showToast('Password reset link sent! Check your email.', 'success');
+        }
+    </script>
+</body>
+</html>
