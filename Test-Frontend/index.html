@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infosys AI Integrated Threat Detection Dashboard</title>
+
+    <!-- Import Inter from Google Fonts for a sleek, premium, modern sans-serif typeface -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Spline Viewer Script -->
+    <script type="module" src="https://unpkg.com/@splinetool/viewer@1.12.98/build/spline-viewer.js"></script>
+
+    <style>
+        /* Reset and box-sizing */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Core layout styling */
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            overflow: hidden;
+            /* Hide scrollbars to allow full screen spline content */
+            position: relative;
+            padding: 40px;
+        }
+
+        /* Spline background container styling */
+        .spline-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            /* Under the text, above the solid black body background */
+            pointer-events: auto;
+            /* Let events interact with the spline model where relevant */
+        }
+
+        spline-viewer {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Hero section container on top */
+        .hero-container {
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            padding-left: 5%;
+            position: relative;
+            z-index: 10;
+            /* Ensure this is rendered on top of the Spline canvas */
+            pointer-events: none;
+            /* Let clicks pass to spline unless clicking on hero elements */
+        }
+
+        .hero-content {
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            pointer-events: auto;
+            /* Enable clicks for title, text, and button */
+        }
+
+        /* Hero Heading - large, tight line height, sleek font-weight */
+        .hero-title {
+            font-size: clamp(3rem, 7.5vw, 5.8rem);
+            font-weight: 300;
+            line-height: 1.08;
+            letter-spacing: -0.035em;
+            color: #ffffff;
+            margin-bottom: 2.2rem;
+            word-spacing: 0.05em;
+        }
+
+        .infosys-blue {
+            color: #007cc3;
+        }
+
+        /* Gradient styling for "for business" */
+        .gradient-text {
+            background: linear-gradient(90deg,
+                    #12b886 0%,
+                    /* Bright mint teal starting point */
+                    #10b981 15%,
+                    /* Vibrant teal/emerald */
+                    #0d9488 35%,
+                    /* Transition to deep teal */
+                    #0f766e 55%,
+                    /* Muted teal */
+                    #115e59 75%,
+                    /* Deep cyan/teal */
+                    #0b3c3c 100%
+                    /* Blends into the dark background */
+                );
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+            display: inline-block;
+        }
+
+        /* Paragraph/Description text */
+        .hero-desc {
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            font-weight: 300;
+            line-height: 1.6;
+            color: #8a969c;
+            /* Subtle greyish teal tint matching the screenshot */
+            margin-bottom: 3.5rem;
+            letter-spacing: -0.01em;
+            max-width: 680px;
+        }
+
+        /* "JOIN US NOW" CTA button */
+        .btn-join {
+            display: inline-block;
+            background-color: #032b2d;
+            /* Exact dark-teal background container */
+            color: #a7f3d0;
+            /* Muted light green/mint text */
+            font-size: 13.5px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 16px 36px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 20px rgba(3, 43, 45, 0.4);
+        }
+
+        /* Premium interactive effects */
+        .btn-join:hover {
+            background-color: #053b3d;
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(16, 185, 129, 0.25);
+        }
+
+        .btn-join:active {
+            transform: translateY(1px);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
+                flex-direction: column;
+                justify-content: center;
+                overflow-y: auto;
+            }
+
+            .hero-container {
+                padding-left: 0;
+            }
+
+            .hero-title {
+                letter-spacing: -0.02em;
+            }
+
+            .hero-desc {
+                margin-bottom: 2.5rem;
+            }
+
+            .btn-join {
+                padding: 14px 28px;
+                font-size: 12px;
+            }
+
+            /* Reduce size of spline viewer on small devices to keep readability */
+            .spline-container {
+                opacity: 0.7;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Spline background scene (contains the new 3D globe and bottom wave) -->
+    <div class="spline-container">
+        <spline-viewer url="https://prod.spline.design/U0tqb4deFtcdXE9U/scene.splinecode"></spline-viewer>
+    </div>
+
+    <!-- Hero Content Overlay -->
+    <main class="hero-container">
+        <section class="hero-content">
+            <h1 class="hero-title">
+                <span class="infosys-blue">Infosys</span><br>
+                Threat Detection<br>
+                <span class="gradient-text">Dashboard</span>
+            </h1>
+            <p class="hero-desc">
+
+                Safeguard your enterprise operations and stay ahead of zero-day vulnerabilities.
+            </p>
+            <a href="login.html" class="btn-join">Get Started</a>
+        </section>
+    </main>
+
+    <script>
+        // Robust removal of Spline logo watermark from shadow DOM
+        (function () {
+            const hideSplineLogo = () => {
+                const viewer = document.querySelector('spline-viewer');
+                if (viewer && viewer.shadowRoot) {
+                    const logo = viewer.shadowRoot.querySelector('#logo');
+                    if (logo) {
+                        logo.style.display = 'none';
+                        logo.remove(); // Remove element entirely from DOM
+                        return true;
+                    }
+                }
+                return false;
+            };
+
+            // Start polling immediately (no window load wrapper)
+            const interval = setInterval(() => {
+                if (hideSplineLogo()) {
+                    clearInterval(interval);
+                    console.log('Spline logo successfully removed.');
+                }
+            }, 50);
+
+            // Also set a backup load event listener
+            window.addEventListener('load', () => {
+                hideSplineLogo();
+            });
+
+            // Clear interval after 15 seconds to avoid performance overhead
+            setTimeout(() => clearInterval(interval), 15000);
+        })();
+    </script>
+</body>
+
+</html>
