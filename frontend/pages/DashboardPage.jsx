@@ -88,7 +88,7 @@ export default function DashboardPage({ onNavigate, theme, toggleTheme }) {
   // Auto scroll terminal logs to bottom
   useEffect(() => {
     if (terminalBottomRef.current) {
-      terminalBottomRef.current.scrollIntoView({ behavior: 'smooth' });
+      terminalBottomRef.current.scrollTop = terminalBottomRef.current.scrollHeight;
     }
   }, [terminalLogs]);
 
@@ -382,13 +382,12 @@ export default function DashboardPage({ onNavigate, theme, toggleTheme }) {
                   ● ACTIVE
                 </span>
               </div>
-              <div className="terminal-feed">
+              <div className="terminal-feed" ref={terminalBottomRef}>
                 {terminalLogs.map((log) => (
                   <div key={log.id} className={`terminal-line ${log.type === 'critical' ? 'critical' : log.type === 'warning' ? 'warning' : log.type === 'success' ? 'text-success' : ''}`}>
                     [{log.time}] {log.message}
                   </div>
                 ))}
-                <div ref={terminalBottomRef} />
               </div>
             </div>
           </div>

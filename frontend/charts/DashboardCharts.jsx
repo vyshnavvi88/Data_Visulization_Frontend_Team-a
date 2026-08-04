@@ -135,6 +135,7 @@ export default function DashboardCharts({ events, theme }) {
           }]
         },
         options: {
+          animation: false,
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
@@ -192,6 +193,7 @@ export default function DashboardCharts({ events, theme }) {
           }]
         },
         options: {
+          animation: false,
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
@@ -291,6 +293,7 @@ export default function DashboardCharts({ events, theme }) {
           }]
         },
         options: {
+          animation: false,
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
