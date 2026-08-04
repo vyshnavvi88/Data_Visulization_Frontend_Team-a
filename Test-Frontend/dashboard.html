@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Security Dashboard - Infosys</title>
+    <!-- Route Guard - Executed before rendering body to prevent flickering -->
+    <script>
+        (function() {
+            const sessionUser = localStorage.getItem('currentUser');
+            if (!sessionUser) {
+                window.location.replace('login.html');
+            }
+        })();
+    </script>
+    <!-- Import Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN for beautiful vector data visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-deep: #030708;
+            --bg-surface: #0a0f12;
+            --bg-sidebar: #050a0c;
+            --border-color: rgba(16, 185, 129, 0.1);
+            --border-hover: rgba(16, 185, 129, 0.3);
+            --accent-mint: #10b981;
+            --accent-blue: #007cc3;
+            --text-primary: #ffffff;
+            --text-secondary: #8e9fa6;
+            --text-muted: #4b585c;
+            
+            --severity-critical: #ef4444;
+            --severity-warning: #f59e0b;
+            --severity-info: #3b82f6;
+            --severity-low: #10b981;
+            
+            --sidebar-width: 260px;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-primary);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            overflow-x: hidden;
+        }
+
+        /* Ambient Glow Behind Panels */
+        .dashboard-glow {
+            position: absolute;
+            width: 800px;
+            height: 800px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.04) 0%, rgba(0, 124, 195, 0.02) 50%, rgba(0,0,0,0) 75%);
+            filter: blur(80px);
+            z-index: 1;
+            pointer-events: none;
+        }
+        .glow-top-right {
+            top: -200px;
+            right: -200px;
+        }
+
+        /* Sidebar Styling */
+        aside {
+            width: var(--sidebar-width);
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 50;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-brand {
+            padding: 32px 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .brand-logo {
+            width: 12px;
+            height: 12px;
+            background-color: var(--accent-mint);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent-mint);
+            animation: pulse-logo 2s infinite alternate;
+        }
+
+        @keyframes pulse-logo {
+            0% { transform: scale(1); box-shadow: 0 0 6px var(--accent-mint); }
+            100% { transform: scale(1.3); box-shadow: 0 0 14px var(--accent-mint); }
+        }
+
+        .brand-name {
+            font-weight: 700;
+            font-size: 16px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .brand-infosys {
+            color: var(--accent-blue);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 24px 16px;
+            flex-grow: 1;
+        }
+
+        .menu-item a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            margin-bottom: 6px;
+        }
+
+        .menu-item a:hover, .menu-item.active a {
+            color: var(--text-primary);
+            background-color: rgba(16, 185, 129, 0.06);
+            border: 1px solid var(--border-color);
+        }
+
+        .menu-item.active a {
+            border-left: 3px solid var(--accent-mint);
+        }
+
+        /* Profile Area inside Sidebar */
+        .sidebar-profile {
+            padding: 24px;
+            border-top: 1px solid rgba(255,255,255,0.03);
+            background-color: rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .profile-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .profile-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-mint));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .profile-info {
+            overflow: hidden;
+        }
+
+        .profile-name {
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+
+        .profile-role {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .btn-logout {
+            width: 100%;
+            background-color: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-logout:hover {
+            background-color: #ef4444;
+            color: white;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+        }
+
+        /* Main Workspace Container */
+        .workspace {
+            margin-left: var(--sidebar-width);
+            flex-grow: 1;
+            padding: 40px;
+            z-index: 10;
+            max-width: calc(100vw - var(--sidebar-width));
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        /* Header Area */
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 24px;
+        }
+
+        .header-title-section h2 {
+            font-size: 28px;
+            font-weight: 300;
+            letter-spacing: -0.02em;
+            margin-bottom: 4px;
+        }
+
+        .header-title-section p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .live-clock {
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            color: var(--text-secondary);
+            background-color: rgba(255,255,255,0.02);
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .status-badge {
+            background-color: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            color: var(--accent-mint);
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-badge-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-mint);
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 6px var(--accent-mint);
+            animation: pulse-dot 1.5s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
+        }
+
+        /* KPI Cards Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .kpi-card {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: transparent;
+            transition: background 0.3s ease;
+        }
+
+        .kpi-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.05);
+        }
+
+        .kpi-card:hover::before {
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-mint));
+        }
+
+        .kpi-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .kpi-value {
+            font-size: 32px;
+            font-weight: 300;
+            letter-spacing: -0.03em;
+        }
+
+        .kpi-trend {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .trend-up {
+            color: var(--severity-critical);
+        }
+
+        .trend-down {
+            color: var(--accent-mint);
+        }
+
+        /* Charts Section Grid */
+        .chart-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 1100px) {
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chart-card {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .chart-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chart-card-title {
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 280px;
+        }
+
+        /* Live Terminal Console Overlay inside distribution */
+        .terminal-feed {
+            background-color: #020405;
+            border: 1px solid rgba(255,255,255,0.03);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Fira Code', monospace;
+            font-size: 11px;
+            color: #10b981;
+            height: 100px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .terminal-line {
+            opacity: 0.8;
+            line-height: 1.4;
+        }
+
+        .terminal-line.critical {
+            color: var(--severity-critical);
+        }
+
+        .terminal-line.warning {
+            color: var(--severity-warning);
+        }
+
+        /* Threat Log Table Section */
+        .logs-section {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            margin-bottom: 20px;
+        }
+
+        .logs-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .table-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .log-filter-btn {
+            background-color: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .log-filter-btn:hover, .log-filter-btn.active {
+            background-color: rgba(16, 185, 129, 0.08);
+            border-color: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 13.5px;
+        }
+
+        th {
+            padding: 12px 16px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+            color: var(--text-primary);
+        }
+
+        tr {
+            transition: background-color 0.2s ease;
+        }
+
+        tr:hover td {
+            background-color: rgba(255, 255, 255, 0.01);
+        }
+
+        /* Severity Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        .badge-critical {
+            background-color: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: var(--severity-critical);
+        }
+
+        .badge-warning {
+            background-color: rgba(245, 158, 11, 0.08);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            color: var(--severity-warning);
+        }
+
+        .badge-info {
+            background-color: rgba(59, 130, 246, 0.08);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            color: var(--severity-info);
+        }
+
+        .badge-low {
+            background-color: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: var(--severity-low);
+        }
+
+        /* Action Buttons */
+        .btn-table-action {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-investigate {
+            color: var(--accent-blue);
+            background-color: rgba(0, 124, 195, 0.06);
+            border: 1px solid rgba(0, 124, 195, 0.15);
+            margin-right: 6px;
+        }
+
+        .btn-investigate:hover {
+            background-color: var(--accent-blue);
+            color: white;
+        }
+
+        .btn-dismiss {
+            color: var(--text-secondary);
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-dismiss:hover {
+            background-color: var(--severity-critical);
+            color: white;
+            border-color: var(--severity-critical);
+        }
+
+        /* Toast notifications system on dashboard */
+        .toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: rgba(10, 15, 18, 0.95);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(16px);
+            border-radius: 8px;
+            padding: 16px;
+            color: #ffffff;
+            font-size: 13.5px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 320px;
+            max-width: 420px;
+            transform: translateX(120%);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: auto;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-critical {
+            border-left: 4px solid var(--severity-critical);
+        }
+
+        .toast-info {
+            border-left: 4px solid var(--accent-blue);
+        }
+
+        .toast-icon {
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+        }
+
+        .toast-critical .toast-icon { color: var(--severity-critical); }
+        .toast-info .toast-icon { color: var(--accent-blue); }
+
+        .toast-close {
+            margin-left: auto;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            aside {
+                transform: translateX(-100%);
+            }
+            aside.open {
+                transform: translateX(0);
+            }
+            .workspace {
+                margin-left: 0;
+                max-width: 100vw;
+                padding: 20px;
+            }
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Ambient top glow layout -->
+    <div class="dashboard-glow glow-top-right"></div>
+
+    <!-- Toast container for live threats -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Sidebar Layout -->
+    <aside id="sidebar">
+        <!-- Brand -->
+        <div class="sidebar-brand">
+            <span class="brand-logo"></span>
+            <h1 class="brand-name"><span class="brand-infosys">Infosys</span> Security</h1>
+        </div>
+
+        <!-- Menu Navigation -->
+        <ul class="sidebar-menu">
+            <li class="menu-item active">
+                <a href="#">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+                    <span>Overview</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#" onclick="mockPageNavigation('Threat Map')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                    <span>Threat Map</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#" onclick="mockPageNavigation('Threat Logs')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    <span>Incidents</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#" onclick="mockPageNavigation('Vulnerability Scanner')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    <span>Shield Scans</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#" onclick="mockPageNavigation('Settings')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    <span>Config</span>
+                </a>
+            </li>
+        </ul>
+
+        <!-- Profile / Logout Block -->
+        <div class="sidebar-profile">
+            <div class="profile-card">
+                <div class="profile-avatar" id="userAvatar">U</div>
+                <div class="profile-info">
+                    <div class="profile-name" id="profileName">Username</div>
+                    <div class="profile-role">Security Operator</div>
+                </div>
+            </div>
+            <button class="btn-logout" onclick="handleLogout()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                <span>Terminate Session</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <main class="workspace">
+        <!-- Header -->
+        <header>
+            <div class="header-title-section">
+                <h2>Cyber Threat Center</h2>
+                <p>Real-time threat monitoring and network visualization terminal</p>
+            </div>
+
+            <div class="system-status">
+                <div class="live-clock" id="liveClock">-- : -- : --</div>
+                <div class="status-badge">
+                    <span class="status-badge-dot"></span>
+                    <span>System Secure</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- KPI Grid -->
+        <section class="kpi-grid">
+            <div class="kpi-card">
+                <span class="kpi-title">Active Security Threats</span>
+                <span class="kpi-value" id="countThreats">4</span>
+                <span class="kpi-trend trend-down">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline><polyline points="17 18 23 18 23 12"></polyline></svg>
+                    <span>-12.4% vs yesterday</span>
+                </span>
+            </div>
+            
+            <div class="kpi-card">
+                <span class="kpi-title">Scanned Data Assets</span>
+                <span class="kpi-value">1,482</span>
+                <span class="kpi-trend trend-down" style="color: var(--accent-mint)">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                    <span>100% Protected</span>
+                </span>
+            </div>
+
+            <div class="kpi-card">
+                <span class="kpi-title">Avg Mitigation Speed</span>
+                <span class="kpi-value">14.2m</span>
+                <span class="kpi-trend trend-down">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline><polyline points="17 18 23 18 23 12"></polyline></svg>
+                    <span>-3.1m avg response</span>
+                </span>
+            </div>
+
+            <div class="kpi-card">
+                <span class="kpi-title">Threat Mitigation Rate</span>
+                <span class="kpi-value">99.98%</span>
+                <span class="kpi-trend trend-down" style="color: var(--accent-mint)">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                    <span>+0.02% recovery</span>
+                </span>
+            </div>
+        </section>
+
+        <!-- Dynamic Visualization Charts -->
+        <section class="chart-grid">
+            <!-- Line Chart (Trend) -->
+            <div class="chart-card">
+                <div class="chart-card-header">
+                    <h3 class="chart-card-title">Intrusion Attacks Trend (24h)</h3>
+                    <span style="font-size:12px; color:var(--text-secondary)">Unit: Incidents/hr</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Donut Chart & Console logs -->
+            <div class="chart-card" style="justify-content: space-between;">
+                <div>
+                    <div class="chart-card-header" style="margin-bottom: 12px;">
+                        <h3 class="chart-card-title">Threat Categories</h3>
+                    </div>
+                    <div class="chart-container" style="height: 180px;">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Simulation Live Logger feed -->
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); display:flex; justify-content:space-between">
+                        <span>Intrusion Feed (Live)</span>
+                        <span style="color: var(--accent-mint); font-family: monospace;">● ON</span>
+                    </div>
+                    <div class="terminal-feed" id="terminalConsole">
+                        <div class="terminal-line">Initialized threat diagnostics framework...</div>
+                        <div class="terminal-line">Firewall rules compiled. Shield active.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Threat Log Table -->
+        <section class="logs-section">
+            <div class="logs-header">
+                <h3 class="chart-card-title">Real-Time Threat Vector Log</h3>
+                
+                <div class="table-controls">
+                    <button class="log-filter-btn active" onclick="filterLogs('ALL')">All</button>
+                    <button class="log-filter-btn" onclick="filterLogs('CRITICAL')">Critical</button>
+                    <button class="log-filter-btn" onclick="filterLogs('WARNING')">Warning</button>
+                    <button class="log-filter-btn" onclick="filterLogs('RESOLVED')">Resolved</button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Incidence Time</th>
+                            <th>Threat Vector</th>
+                            <th>Source Address</th>
+                            <th>Target Host</th>
+                            <th>Severity</th>
+                            <th>Status Badge</th>
+                            <th>Operator Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logTableBody">
+                        <!-- Filled by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Set user profile details from localStorage session
+        const sessionUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        const username = sessionUser.username || 'Admin Operator';
+        document.getElementById('profileName').innerText = username;
+        document.getElementById('userAvatar').innerText = username.charAt(0).toUpperCase();
+
+        // System Date Clock
+        function startLiveClock() {
+            const clockEl = document.getElementById('liveClock');
+            setInterval(() => {
+                const now = new Date();
+                clockEl.innerText = now.toLocaleTimeString('en-US', { hour12: false });
+            }, 1000);
+        }
+        startLiveClock();
+
+        // Base log databases
+        let threatLogs = [
+            {
+                id: 1,
+                time: "19:54:12",
+                name: "Brute-Force Attack",
+                source: "192.168.12.94",
+                target: "Auth-Server-A",
+                severity: "CRITICAL",
+                status: "UNRESOLVED"
+            },
+            {
+                id: 2,
+                time: "19:48:33",
+                name: "SSL Certificate Expiration Warning",
+                source: "Internal Monitoring",
+                target: "Public-API-Gateway",
+                severity: "WARNING",
+                status: "UNRESOLVED"
+            },
+            {
+                id: 3,
+                time: "19:35:10",
+                name: "Port Scanning Activity Detected",
+                source: "185.220.101.4",
+                target: "DMZ-Web-Server-01",
+                severity: "WARNING",
+                status: "UNDER_INVESTIGATION"
+            },
+            {
+                id: 4,
+                time: "19:12:05",
+                name: "Inbound SQL Injection Payload Blocked",
+                source: "45.155.205.18",
+                target: "SQL-DB-Cluster-02",
+                severity: "CRITICAL",
+                status: "RESOLVED"
+            }
+        ];
+
+        // Threat Counters and statistics updates
+        function updateCounters() {
+            const unresolvedThreats = threatLogs.filter(log => log.status !== 'RESOLVED');
+            document.getElementById('countThreats').innerText = unresolvedThreats.length;
+        }
+
+        // Draw and update table logs
+        let currentFilter = 'ALL';
+        function drawTable() {
+            const tableBody = document.getElementById('logTableBody');
+            tableBody.innerHTML = '';
+
+            const filtered = threatLogs.filter(log => {
+                if (currentFilter === 'ALL') return true;
+                if (currentFilter === 'CRITICAL') return log.severity === 'CRITICAL' && log.status !== 'RESOLVED';
+                if (currentFilter === 'WARNING') return log.severity === 'WARNING' && log.status !== 'RESOLVED';
+                if (currentFilter === 'RESOLVED') return log.status === 'RESOLVED';
+            });
+
+            if (filtered.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-secondary); padding: 30px 0;">No matching security records found.</td></tr>`;
+                return;
+            }
+
+            filtered.forEach(log => {
+                const tr = document.createElement('tr');
+                tr.id = `row-${log.id}`;
+                
+                // Status Badge class determination
+                let statusBadge = '';
+                if (log.status === 'UNRESOLVED') {
+                    statusBadge = `<span class="badge badge-critical" style="font-size:10px;">Unresolved</span>`;
+                } else if (log.status === 'UNDER_INVESTIGATION') {
+                    statusBadge = `<span class="badge badge-warning" style="font-size:10px;">Investigating</span>`;
+                } else {
+                    statusBadge = `<span class="badge badge-low" style="font-size:10px;">Resolved</span>`;
+                }
+
+                // Action buttons based on status
+                let actionButtons = '';
+                if (log.status !== 'RESOLVED') {
+                    actionButtons = `
+                        <button class="btn-table-action btn-investigate" onclick="investigateThreat(${log.id})">Investigate</button>
+                        <button class="btn-table-action btn-dismiss" onclick="dismissThreat(${log.id})">Resolve</button>
+                    `;
+                } else {
+                    actionButtons = `<span style="color:var(--text-muted); font-size:12px;">Archived</span>`;
+                }
+
+                tr.innerHTML = `
+                    <td style="font-family: monospace;">${log.time}</td>
+                    <td style="font-weight: 500;">${log.name}</td>
+                    <td style="font-family: monospace; color: var(--accent-blue);">${log.source}</td>
+                    <td style="color: var(--text-secondary);">${log.target}</td>
+                    <td><span class="badge badge-${log.severity.toLowerCase()}">${log.severity}</span></td>
+                    <td>${statusBadge}</td>
+                    <td>${actionButtons}</td>
+                `;
+
+                tableBody.appendChild(tr);
+            });
+        }
+
+        // Log actions handler
+        function investigateThreat(id) {
+            const index = threatLogs.findIndex(log => log.id === id);
+            if (index !== -1) {
+                threatLogs[index].status = 'UNDER_INVESTIGATION';
+                drawTable();
+                updateCounters();
+                logConsole(`Threat Vector #${id} is now flagged as [UNDER INVESTIGATION] by ${username}.`);
+                showToast(`Investigating Threat: ${threatLogs[index].name}`, 'info');
+            }
+        }
+
+        function dismissThreat(id) {
+            const index = threatLogs.findIndex(log => log.id === id);
+            if (index !== -1) {
+                const threatName = threatLogs[index].name;
+                threatLogs[index].status = 'RESOLVED';
+                drawTable();
+                updateCounters();
+                logConsole(`Threat Vector #${id} (${threatName}) successfully mitigated and resolved.`);
+                showToast(`Threat Resolved: ${threatName}`, 'info');
+            }
+        }
+
+        function filterLogs(filterType) {
+            currentFilter = filterType;
+            
+            // Set buttons active status
+            const buttons = document.querySelectorAll('.log-filter-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            drawTable();
+        }
+
+        // Output info logs to mini terminal
+        function logConsole(message, type = 'info') {
+            const consoleEl = document.getElementById('terminalConsole');
+            const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+            
+            const line = document.createElement('div');
+            line.className = `terminal-line ${type}`;
+            line.innerText = `[${time}] ${message}`;
+            
+            consoleEl.appendChild(line);
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+        }
+
+        // Dynamic visual notification alerts
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            
+            const icon = type === 'critical' ? 
+                `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>` : 
+                `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>`;
+
+            toast.innerHTML = `
+                <div class="toast-icon">${icon}</div>
+                <div style="flex-grow: 1;">
+                    <div style="font-weight:600; font-size:12px; text-transform:uppercase; margin-bottom:2px; color:${type === 'critical' ? 'var(--severity-critical)' : 'var(--accent-blue)'}">
+                        ${type === 'critical' ? 'Alert Flagged' : 'System Notice'}
+                    </div>
+                    <div>${message}</div>
+                </div>
+                <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 10);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400);
+            }, 6000);
+        }
+
+        // Live threat generator simulator
+        const simulatedThreats = [
+            { name: "Unauthorized SSH Attempt", source: "172.56.230.12", target: "Production-DB-Proxy", severity: "CRITICAL" },
+            { name: "Anomalous Traffic Spike Detected", source: "External Crawler", target: "Asset-Storage-S3", severity: "WARNING" },
+            { name: "SQL Injection Probe Blocked", source: "109.112.5.88", target: "Payment-Backend-API", severity: "CRITICAL" },
+            { name: "DNS Query Leak Vulnerability Check", source: "Internal Audit Scanner", target: "Gateway-Router-03", severity: "WARNING" }
+        ];
+
+        let nextThreatId = 5;
+        function simulateLiveThreat() {
+            // Pick a random simulated threat template
+            const template = simulatedThreats[Math.floor(Math.random() * simulatedThreats.length)];
+            const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+            
+            const newThreat = {
+                id: nextThreatId++,
+                time: time,
+                name: template.name,
+                source: template.source,
+                target: template.target,
+                severity: template.severity,
+                status: 'UNRESOLVED'
+            };
+
+            // Insert at the beginning of logs list
+            threatLogs.unshift(newThreat);
+            
+            // Limit log storage to 20 to prevent DOM overflow
+            if (threatLogs.length > 20) {
+                threatLogs.pop();
+            }
+
+            drawTable();
+            updateCounters();
+            
+            // Console print & trigger toast notifications
+            logConsole(`Intrusion anomaly detected: ${newThreat.name} targeting host ${newThreat.target}.`, newThreat.severity === 'CRITICAL' ? 'critical' : 'warning');
+            showToast(`${newThreat.name} from ${newThreat.source} targeting ${newThreat.target}`, 'critical');
+
+            // Dynamic Chart updates
+            updateTrendData();
+        }
+
+        // Set interval for threats every 12 seconds
+        setInterval(simulateLiveThreat, 12000);
+
+        // Sidebar Navigation links mocking
+        function mockPageNavigation(pageName) {
+            logConsole(`Navigation to page [${pageName}] requested. (Stub component loaded)`);
+            showToast(`Loading layout: ${pageName}`, 'info');
+        }
+
+        // Session termination log out handler
+        function handleLogout() {
+            localStorage.removeItem('currentUser');
+            logConsole("Logging out current active session...");
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1000);
+        }
+
+        // --- Chart JS Implementation ---
+        
+        // 1. Intrusion Trend Chart (Line)
+        const trendCtx = document.getElementById('trendChart').getContext('2d');
+        
+        let trendLabels = Array.from({length: 12}, (_, i) => `${(i * 2)}h ago`).reverse();
+        let trendDatasetData = [5, 8, 12, 10, 6, 8, 14, 20, 18, 11, 8, 4];
+        
+        const trendChart = new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: trendLabels,
+                datasets: [{
+                    label: 'Attacks Blocked',
+                    data: trendDatasetData,
+                    borderColor: '#10b981',
+                    borderWidth: 2,
+                    backgroundColor: 'rgba(16, 185, 129, 0.05)',
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#10b981',
+                    pointHoverRadius: 6,
+                    pointHoverBackgroundColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        grid: { color: 'rgba(255, 255, 255, 0.02)' },
+                        ticks: { color: '#8e9fa6', font: { size: 10 } }
+                    },
+                    y: {
+                        grid: { color: 'rgba(255, 255, 255, 0.02)' },
+                        ticks: { color: '#8e9fa6', font: { size: 10 } }
+                    }
+                }
+            }
+        });
+
+        // 2. Threat Category distribution Donut Chart
+        const catCtx = document.getElementById('categoryChart').getContext('2d');
+        const categoryChart = new Chart(catCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Brute-force', 'SQL injection', 'SSL expiry', 'Port scans'],
+                datasets: [{
+                    data: [15, 30, 25, 30],
+                    backgroundColor: [
+                        '#ef4444', // Critical red
+                        'rgba(0, 124, 195, 0.85)', // Infosys Blue
+                        '#f59e0b', // Warning Orange
+                        '#10b981'  // Mint green
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            color: '#8e9fa6',
+                            font: { size: 11, family: 'Inter' },
+                            padding: 12
+                        }
+                    }
+                },
+                cutout: '70%'
+            }
+        });
+
+        // Live trend data increments over time
+        function updateTrendData() {
+            // Update last point data slightly
+            const lastIndex = trendDatasetData.length - 1;
+            trendDatasetData[lastIndex] += 1;
+            trendChart.update();
+        }
+
+        // Page startup setups
+        window.addEventListener('DOMContentLoaded', () => {
+            drawTable();
+            updateCounters();
+            logConsole(`Session logged successfully by operator: ${username}`);
+        });
+
+    </script>
+</body>
+</html>
