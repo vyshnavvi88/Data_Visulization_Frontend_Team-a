@@ -62,6 +62,10 @@ export default function LoginPage({ onNavigate, theme, toggleTheme }) {
           onNavigate('dashboard');
         }, 1200);
       } else {
+        // If Vite proxy returns bad gateway / timeout, fall back to local database
+        if (response.status === 502 || response.status === 504 || response.status === 404) {
+          throw new Error(`Proxy gateway status ${response.status}`);
+        }
         const errorData = await response.json().catch(() => ({}));
         triggerToast(errorData.error || 'Invalid email/username or password.', 'error');
       }

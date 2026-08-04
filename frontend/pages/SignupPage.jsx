@@ -77,6 +77,10 @@ export default function SignupPage({ onNavigate, theme, toggleTheme }) {
           onNavigate('login');
         }, 1200);
       } else {
+        // If Vite proxy returns bad gateway / timeout, fall back to local database
+        if (response.status === 502 || response.status === 504 || response.status === 404) {
+          throw new Error(`Proxy gateway status ${response.status}`);
+        }
         const errorData = await response.json().catch(() => ({}));
         triggerToast(errorData.error || 'Registration failed.', 'error');
       }
