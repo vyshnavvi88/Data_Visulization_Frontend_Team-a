@@ -1,0 +1,29 @@
+/* Signup Strength Meter Styling matching Test-Frontend/signup.html */
+
+.password-strength-wrapper {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.strength-bars {
+    display: flex;
+    gap: 6px;
+    width: 100%;
+}
+
+.strength-bar {
+    height: 4px;
+    flex-grow: 1;
+    border-radius: 2px;
+    background-color: rgba(255, 255, 255, 0.08);
+    transition: background-color 0.3s ease;
+}
+
+.strength-text {
+    font-size: 11px;
+    color: #8e9fa6;
+    display: flex;
+    justify-content: space-between;
+}

@@ -1,0 +1,1452 @@
+/* Dashboard Layout & Page Styles matching Test-Frontend/dashboard.html */
+
+:root {
+    --bg-deep: #030708;
+    --bg-surface: #0a0f12;
+    --bg-sidebar: #050a0c;
+    --border-color: rgba(16, 185, 129, 0.1);
+    --border-hover: rgba(16, 185, 129, 0.3);
+    --accent-mint: #10b981;
+    --accent-blue: #007cc3;
+    --text-primary: #ffffff;
+    --text-secondary: #8e9fa6;
+    --text-muted: #4b585c;
+    
+    --severity-critical: #ef4444;
+    --severity-warning: #f59e0b;
+    --severity-info: #3b82f6;
+    --severity-low: #10b981;
+    
+    --sidebar-width: 260px;
+}
+
+.dashboard-body {
+    background-color: var(--bg-deep);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    overflow-x: hidden;
+    position: relative;
+    width: 100vw;
+    box-sizing: border-box;
+}
+
+/* Ambient Glow Behind Panels */
+.dashboard-body .dashboard-glow {
+    position: absolute;
+    width: 800px;
+    height: 800px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.04) 0%, rgba(0, 124, 195, 0.02) 50%, rgba(0,0,0,0) 75%);
+    filter: blur(80px);
+    z-index: 1;
+    pointer-events: none;
+}
+.dashboard-body .glow-top-right {
+    top: -200px;
+    right: -200px;
+}
+
+/* Sidebar Styling */
+.dashboard-body .dashboard-sidebar {
+    width: var(--sidebar-width);
+    background-color: var(--bg-sidebar);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    height: 100vh;
+    z-index: 50;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dashboard-body .sidebar-brand {
+    padding: 32px 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.dashboard-body .brand-logo {
+    width: 12px;
+    height: 12px;
+    background-color: var(--accent-mint);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--accent-mint);
+    animation: pulse-logo 2s infinite alternate;
+}
+
+@keyframes pulse-logo {
+    0% { transform: scale(1); box-shadow: 0 0 6px var(--accent-mint); }
+    100% { transform: scale(1.3); box-shadow: 0 0 14px var(--accent-mint); }
+}
+
+.dashboard-body .brand-name {
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.dashboard-body .brand-infosys {
+    color: var(--accent-blue);
+}
+
+.dashboard-body .sidebar-menu {
+    list-style: none;
+    padding: 24px 16px;
+    flex-grow: 1;
+    margin: 0;
+}
+
+.dashboard-body .menu-item a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    margin-bottom: 6px;
+}
+
+.dashboard-body .menu-item a:hover, 
+.dashboard-body .menu-item.active a {
+    color: var(--text-primary);
+    background-color: rgba(16, 185, 129, 0.06);
+    border: 1px solid var(--border-color);
+}
+
+.dashboard-body .menu-item.active a {
+    border-left: 3px solid var(--accent-mint);
+}
+
+/* Profile Area inside Sidebar */
+.dashboard-body .sidebar-profile {
+    padding: 24px;
+    border-top: 1px solid rgba(255,255,255,0.03);
+    background-color: rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.dashboard-body .profile-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.dashboard-body .profile-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-mint));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 16px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.dashboard-body .profile-info {
+    overflow: hidden;
+}
+
+.dashboard-body .profile-name {
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.dashboard-body .profile-role {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.dashboard-body .btn-logout {
+    width: 100%;
+    background-color: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.dashboard-body .btn-logout:hover {
+    background-color: #ef4444;
+    color: white;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+}
+
+.dashboard-body .dashboard-workspace {
+    margin-left: var(--sidebar-width);
+    flex-grow: 1;
+    padding: 40px;
+    z-index: 10;
+    max-width: calc(100vw - var(--sidebar-width));
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    box-sizing: border-box;
+    transition: margin-left 0.4s cubic-bezier(0.16, 1, 0.3, 1), max-width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Collapsed Sidebar Structural Shifts */
+.dashboard-body.sidebar-collapsed .dashboard-sidebar {
+    transform: translateX(-100%);
+}
+
+.dashboard-body.sidebar-collapsed .dashboard-workspace {
+    margin-left: 0;
+    max-width: 100vw;
+}
+
+.btn-sidebar-toggle:hover {
+    background-color: rgba(16, 185, 129, 0.08) !important;
+    border-color: var(--accent-mint) !important;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
+}
+
+/* Header Area */
+.dashboard-body .workspace-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 24px;
+}
+
+.dashboard-body .header-title-section h2 {
+    font-size: 28px;
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+    color: #ffffff;
+}
+
+.dashboard-body .header-title-section p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.dashboard-body .system-status {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.dashboard-body .live-clock {
+    font-family: monospace;
+    font-size: 13px;
+    color: var(--text-secondary);
+    background-color: rgba(255,255,255,0.02);
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.dashboard-body .status-badge {
+    background-color: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    color: var(--accent-mint);
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dashboard-body .status-badge-dot {
+    width: 8px;
+    height: 8px;
+    background-color: var(--accent-mint);
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 6px var(--accent-mint);
+    animation: pulse-dot 1.5s infinite;
+}
+
+@keyframes pulse-dot {
+    0% { opacity: 0.4; }
+    50% { opacity: 1; }
+    100% { opacity: 0.4; }
+}
+
+/* KPI Cards Grid */
+.dashboard-body .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.dashboard-body .kpi-card {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.dashboard-body .kpi-card::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: transparent;
+    transition: background 0.3s ease;
+}
+
+.dashboard-body .kpi-card:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(16, 185, 129, 0.05);
+}
+
+/* Colors for KPI cards matching react component config */
+.dashboard-body .kpi-blue::before { background: #3b82f6; }
+.dashboard-body .kpi-red::before { background: #ef4444; }
+.dashboard-body .kpi-orange::before { background: #f59e0b; }
+.dashboard-body .kpi-purple::before { background: #a855f7; }
+.dashboard-body .kpi-green::before { background: #10b981; }
+
+.dashboard-body .kpi-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dashboard-body .kpi-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.dashboard-body .kpi-icon-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.03);
+    color: var(--text-secondary);
+}
+
+.dashboard-body .kpi-blue .kpi-icon-circle { color: #3b82f6; background-color: rgba(59, 130, 246, 0.08); }
+.dashboard-body .kpi-red .kpi-icon-circle { color: #ef4444; background-color: rgba(239, 68, 68, 0.08); }
+.dashboard-body .kpi-orange .kpi-icon-circle { color: #f59e0b; background-color: rgba(245, 158, 11, 0.08); }
+.dashboard-body .kpi-purple .kpi-icon-circle { color: #a855f7; background-color: rgba(168, 85, 247, 0.08); }
+.dashboard-body .kpi-green .kpi-icon-circle { color: #10b981; background-color: rgba(16, 185, 129, 0.08); }
+
+.dashboard-body .kpi-value {
+    font-size: 32px;
+    font-weight: 300;
+    letter-spacing: -0.03em;
+    color: #ffffff;
+    margin: 0;
+}
+
+.dashboard-body .kpi-display {
+    font-size: 11.5px;
+    color: var(--text-secondary);
+}
+
+/* Charts Wrapper */
+.dashboard-body .chart-card {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    height: 100%;
+}
+
+.dashboard-body .chart-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.dashboard-body .chart-card-title {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 0;
+}
+
+.dashboard-body .chart-container {
+    position: relative;
+    width: 100%;
+}
+
+/* Terminal & Simulation Grid */
+.dashboard-body .terminal-card {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.dashboard-body .terminal-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dashboard-body .terminal-feed {
+    background-color: #020405;
+    border: 1px solid rgba(255,255,255,0.03);
+    border-radius: 8px;
+    padding: 16px;
+    font-family: monospace;
+    font-size: 12px;
+    color: #10b981;
+    height: 150px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.dashboard-body .terminal-line {
+    opacity: 0.85;
+    line-height: 1.4;
+}
+
+.dashboard-body .terminal-line.critical {
+    color: var(--severity-critical);
+}
+
+.dashboard-body .terminal-line.warning {
+    color: var(--severity-warning);
+}
+
+.dashboard-body .control-card {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.dashboard-body .btn-control-toggle {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.dashboard-body .active-sim {
+    background-color: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.dashboard-body .active-sim:hover {
+    background-color: #ef4444;
+    color: #ffffff;
+}
+
+.dashboard-body .inactive-sim {
+    background-color: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    color: var(--accent-mint);
+}
+
+.dashboard-body .inactive-sim:hover {
+    background-color: var(--accent-mint);
+    color: #ffffff;
+}
+
+.dashboard-body .btn-control-sync {
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--text-secondary);
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.dashboard-body .btn-control-sync:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+    color: #ffffff;
+}
+
+/* Threat Log Table Section */
+.dashboard-body .logs-section {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    margin-bottom: 20px;
+}
+
+.dashboard-body .logs-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    padding-bottom: 16px;
+}
+
+.dashboard-body .logs-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.dashboard-body .search-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: rgba(0,0,0,0.2);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 6px;
+    padding: 6px 12px;
+    min-width: 200px;
+}
+
+.dashboard-body .search-bar input {
+    background: none;
+    border: none;
+    outline: none;
+    color: #ffffff;
+    font-size: 13px;
+    width: 100%;
+}
+
+.dashboard-body .filter-select {
+    background-color: rgba(0,0,0,0.2);
+    border: 1px solid rgba(255,255,255,0.06);
+    color: var(--text-secondary);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+}
+
+.dashboard-body .filter-select option {
+    background-color: var(--bg-surface);
+    color: #ffffff;
+}
+
+.dashboard-body .table-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.dashboard-body .log-filter-btn {
+    background-color: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    color: var(--text-secondary);
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12.5px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.dashboard-body .log-filter-btn:hover, 
+.dashboard-body .log-filter-btn.active {
+    background-color: rgba(16, 185, 129, 0.08);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+.dashboard-body .btn-export-csv {
+    background-color: rgba(59, 130, 246, 0.08);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    color: var(--severity-info);
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12.5px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.dashboard-body .btn-export-csv:hover {
+    background-color: var(--severity-info);
+    color: #ffffff;
+}
+
+.dashboard-body .table-responsive {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.dashboard-body table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 13.5px;
+}
+
+.dashboard-body th {
+    padding: 12px 16px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.dashboard-body td {
+    padding: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+    color: var(--text-primary);
+}
+
+.dashboard-body tr {
+    transition: background-color 0.2s ease;
+}
+
+.dashboard-body tr:hover td {
+    background-color: rgba(255, 255, 255, 0.01);
+}
+
+/* Badges */
+.dashboard-body .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.dashboard-body .badge-critical {
+    background-color: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: var(--severity-critical);
+}
+
+.dashboard-body .badge-warning {
+    background-color: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    color: var(--severity-warning);
+}
+
+.dashboard-body .badge-info {
+    background-color: rgba(59, 130, 246, 0.08);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    color: var(--severity-info);
+}
+
+.dashboard-body .badge-low {
+    background-color: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    color: var(--severity-low);
+}
+
+/* Operator Actions */
+.dashboard-body .btn-table-action {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 12px;
+    transition: all 0.2s ease;
+}
+
+.dashboard-body .btn-investigate {
+    color: var(--accent-blue);
+    background-color: rgba(0, 124, 195, 0.06);
+    border: 1px solid rgba(0, 124, 195, 0.15);
+    margin-right: 6px;
+}
+
+.dashboard-body .btn-investigate:hover {
+    background-color: var(--accent-blue);
+    color: white;
+}
+
+.dashboard-body .btn-dismiss {
+    color: var(--text-secondary);
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.dashboard-body .btn-dismiss:hover {
+    background-color: var(--severity-critical);
+    color: white;
+    border-color: var(--severity-critical);
+}
+
+/* Toasts in Dashboard */
+.dashboard-body .toast-container {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    pointer-events: none;
+}
+
+.dashboard-body .toast {
+    background: rgba(10, 15, 18, 0.95);
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(16px);
+    border-radius: 8px;
+    padding: 16px;
+    color: #ffffff;
+    font-size: 13.5px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 320px;
+    max-width: 420px;
+    transform: translateX(120%);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    pointer-events: auto;
+}
+
+.dashboard-body .toast.show {
+    transform: translateX(0);
+}
+
+.dashboard-body .toast-critical {
+    border-left: 4px solid var(--severity-critical);
+}
+
+.dashboard-body .toast-info {
+    border-left: 4px solid var(--accent-blue);
+}
+
+.dashboard-body .toast-icon {
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+}
+
+.dashboard-body .toast-critical .toast-icon { color: var(--severity-critical); }
+.dashboard-body .toast-info .toast-icon { color: var(--accent-blue); }
+
+.dashboard-body .toast-content-wrapper {
+    flex-grow: 1;
+}
+
+.dashboard-body .toast-header-text {
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+}
+
+.dashboard-body .toast-critical .toast-header-text { color: var(--severity-critical); }
+.dashboard-body .toast-info .toast-header-text { color: var(--accent-blue); }
+
+.dashboard-body .toast-message-text {
+    font-size: 13px;
+}
+
+.dashboard-body .toast-close {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 992px) {
+    .dashboard-body .dashboard-sidebar {
+        transform: translateX(-100%);
+    }
+    .dashboard-body .dashboard-workspace {
+        margin-left: 0;
+        max-width: 100vw;
+        padding: 20px;
+    }
+    .dashboard-body .workspace-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+}
+
+/* --- Light Theme Overrides for Dashboard --- */
+.light-theme {
+    --bg-deep: #f1f5f9;
+    --bg-surface: #ffffff;
+    --bg-sidebar: #f8fafc;
+    --border-color: rgba(16, 185, 129, 0.16);
+    --border-hover: rgba(16, 185, 129, 0.4);
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+}
+
+.light-theme .dashboard-sidebar {
+    background-color: #f8fafc;
+    border-right: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.light-theme .sidebar-profile {
+    background-color: rgba(15, 23, 42, 0.03);
+    border-top: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.light-theme .profile-avatar {
+    color: #ffffff;
+    text-shadow: none;
+}
+
+.light-theme .live-clock {
+    background-color: rgba(15, 23, 42, 0.03);
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    color: var(--text-secondary);
+}
+
+.light-theme .kpi-card {
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+}
+
+.light-theme .kpi-icon-circle {
+    background-color: rgba(15, 23, 42, 0.03);
+}
+
+.light-theme .chart-card,
+.light-theme .terminal-card,
+.light-theme .control-card,
+.light-theme .logs-section {
+    box-shadow: 0 4px 15px rgba(15, 23, 42, 0.04);
+}
+
+.light-theme .terminal-feed {
+    background-color: #0f172a;
+    color: #38bdf8;
+    border: 1px solid rgba(15, 23, 42, 0.05);
+}
+
+.light-theme .btn-control-sync {
+    background-color: rgba(15, 23, 42, 0.03);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.light-theme .btn-control-sync:hover {
+    background-color: rgba(15, 23, 42, 0.06);
+}
+
+.light-theme .search-bar {
+    background-color: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(15, 23, 42, 0.12);
+}
+
+.light-theme .search-bar input {
+    color: #0f172a;
+}
+
+.light-theme .filter-select {
+    background-color: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(15, 23, 42, 0.12);
+}
+
+.light-theme .filter-select option {
+    background-color: #ffffff;
+    color: #0f172a;
+}
+
+.light-theme .log-filter-btn {
+    background-color: rgba(15, 23, 42, 0.02);
+    border: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.light-theme .log-filter-btn:hover,
+.light-theme .log-filter-btn.active {
+    background-color: rgba(16, 185, 129, 0.08);
+}
+
+.light-theme tr:hover td {
+    background-color: rgba(15, 23, 42, 0.02);
+}
+
+.light-theme td {
+    border-bottom: 1px solid rgba(15, 23, 42, 0.03);
+}
+
+.light-theme th {
+    border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.light-theme .btn-dismiss {
+    background-color: rgba(15, 23, 42, 0.03);
+    border-color: rgba(15, 23, 42, 0.08);
+}
+
+.light-theme .btn-dismiss:hover {
+    background-color: var(--severity-critical);
+}
+
+.light-theme .toast {
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    border-color: rgba(15, 23, 42, 0.08);
+    color: #0f172a;
+}
+
+/* --- Panel Layout Card Views --- */
+.card-view {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 32px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* --- Threat Map Styles --- */
+.threat-map-container {
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.map-canvas-wrapper {
+    background-color: #020405;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    overflow: hidden;
+}
+
+.map-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Attack Line Animation Flow */
+.attack-vector-line {
+    animation: attack-flow 6s linear infinite;
+}
+
+@keyframes attack-flow {
+    to {
+        stroke-dashoffset: -120;
+    }
+}
+
+/* Pulsing Map Nodes */
+.pulse-node {
+    animation: node-pulse-anim 1.5s infinite;
+}
+
+@keyframes node-pulse-anim {
+    0% {
+        r: 4;
+        opacity: 0.8;
+    }
+    50% {
+        r: 8;
+        opacity: 0.4;
+    }
+    100% {
+        r: 4;
+        opacity: 0.8;
+    }
+}
+
+.pulse-target {
+    transform-origin: center;
+    animation: target-pulse-anim 2s infinite ease-in-out;
+}
+
+@keyframes target-pulse-anim {
+    0% {
+        transform: scale(0.9);
+        opacity: 0.5;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(0.9);
+        opacity: 0.5;
+    }
+}
+
+.active-threats-card {
+    background-color: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    padding: 20px;
+    height: 100%;
+}
+
+.active-threat-item {
+    background-color: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 6px;
+    padding: 12px;
+    transition: all 0.2s ease;
+}
+
+.active-threat-item:hover {
+    border-color: var(--border-hover);
+    background-color: rgba(255, 255, 255, 0.04);
+}
+
+/* --- Timeline Section Styles --- */
+.timeline-wrapper {
+    position: relative;
+    padding: 10px 0;
+}
+
+.timeline-track {
+    position: relative;
+    padding-left: 32px;
+}
+
+.timeline-track::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 7px;
+    width: 2px;
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
+.light-theme .timeline-track::before {
+    background-color: rgba(15, 23, 42, 0.08);
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 24px;
+}
+
+.timeline-node {
+    position: absolute;
+    left: -32px;
+    top: 6px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    z-index: 10;
+    border: 3px solid var(--bg-surface);
+}
+
+.timeline-node-glow {
+    position: absolute;
+    top: -6px;
+    left: -6px;
+    right: -6px;
+    bottom: -6px;
+    border-radius: 50%;
+    animation: node-glow-pulse 1.8s infinite alternate;
+}
+
+@keyframes node-glow-pulse {
+    0% { transform: scale(1); opacity: 0.2; }
+    100% { transform: scale(1.3); opacity: 0.6; }
+}
+
+.timeline-card-content {
+    background-color: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 8px;
+    padding: 20px;
+    transition: all 0.2s ease;
+}
+
+.light-theme .timeline-card-content {
+    background-color: #ffffff;
+    border-color: rgba(15, 23, 42, 0.06);
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.02);
+}
+
+.timeline-card-content:hover {
+    border-color: var(--border-hover);
+    transform: translateX(4px);
+}
+
+/* --- Vulnerability Scanner Radar Styles --- */
+.radar-scanner-widget {
+    background-color: #020405;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 12px;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.radar-circle {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.02) 0%, rgba(0,0,0,0) 80%);
+    overflow: hidden;
+}
+
+.radar-circle::before, .radar-circle::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(16, 185, 129, 0.08);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.radar-circle::before {
+    width: 130px;
+    height: 130px;
+}
+
+.radar-circle::after {
+    width: 60px;
+    height: 60px;
+}
+
+.radar-sweep {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: conic-gradient(from 0deg, rgba(16, 185, 129, 0.15) 0deg, rgba(16, 185, 129, 0) 120deg);
+    transform-origin: center;
+}
+
+.radar-sweep.scanning {
+    animation: radar-sweep-spin 3s linear infinite;
+}
+
+@keyframes radar-sweep-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.radar-dot {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--severity-critical);
+    opacity: 0.1;
+    transition: opacity 0.5s ease;
+}
+
+.radar-dot.active-dot {
+    opacity: 0.8;
+    box-shadow: 0 0 8px var(--severity-critical);
+}
+
+.dot-1 { top: 40px; left: 60px; }
+.dot-2 { top: 120px; left: 150px; background-color: var(--severity-warning); }
+.dot-3 { top: 80px; left: 110px; }
+
+.scan-console-logs {
+    background-color: #020405;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    border-radius: 6px;
+    padding: 12px;
+    font-family: monospace;
+    height: 120px;
+    overflow-y: auto;
+}
+
+.scan-log-line {
+    line-height: 1.6;
+}
+
+/* --- Configuration Sliders --- */
+input[type="range"].accent-success {
+    accent-color: var(--accent-mint);
+}
+
+/* --- Light Theme Font Visibility Fixes --- */
+.light-theme .text-white {
+    color: var(--text-primary) !important;
+}
+
+.light-theme .dashboard-body {
+    color: var(--text-primary) !important;
+}
+
+.light-theme .header-title-section h2 {
+    color: var(--text-primary) !important;
+}
+
+.light-theme .kpi-value {
+    color: var(--text-primary) !important;
+}
+
+.light-theme .chart-card-title {
+    color: var(--text-primary) !important;
+}
+
+.light-theme h1,
+.light-theme h2,
+.light-theme h3,
+.light-theme h4,
+.light-theme h5,
+.light-theme h6 {
+    color: var(--text-primary) !important;
+}
+
+.light-theme .terminal-card-header span,
+.light-theme .control-card h4 span {
+    color: var(--text-primary) !important;
+}
+
+.light-theme td.fw-semibold {
+    color: var(--text-primary) !important;
+}
+
+.light-theme .live-clock {
+    color: var(--text-secondary) !important;
+    border-color: rgba(15, 23, 42, 0.08) !important;
+    background-color: rgba(15, 23, 42, 0.03) !important;
+}
+
+/* --- Light Theme Panel Background & Contrast Corrections --- */
+.light-theme .scan-audit-card,
+.light-theme .config-card,
+.light-theme .active-threats-card {
+    background-color: var(--bg-surface) !important;
+    border-color: var(--border-color) !important;
+}
+
+.light-theme .active-threat-item {
+    background-color: rgba(15, 23, 42, 0.02) !important;
+    border-color: rgba(15, 23, 42, 0.06) !important;
+}
+
+.light-theme .radar-scanner-widget,
+.light-theme .map-canvas-wrapper {
+    background-color: #f8fafc !important;
+    border-color: rgba(15, 23, 42, 0.08) !important;
+}
+
+.light-theme .map-svg text {
+    fill: var(--text-primary) !important;
+}
+
+.light-theme .scan-console-logs {
+    background-color: #0f172a !important;
+    border-color: rgba(15, 23, 42, 0.08) !important;
+}
+
+.light-theme .scan-log-line {
+    color: #e2e8f0 !important;
+}
+
+/* --- Premium Micro-Animations & Glow Hover States --- */
+
+/* 1. KPI Cards Color-Matching Glow Shadows */
+.dashboard-body .kpi-card {
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dashboard-body .kpi-blue:hover {
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.22), inset 0 0 12px rgba(59, 130, 246, 0.05) !important;
+    border-color: rgba(59, 130, 246, 0.4) !important;
+}
+
+.dashboard-body .kpi-red:hover {
+    box-shadow: 0 10px 25px rgba(239, 68, 68, 0.22), inset 0 0 12px rgba(239, 68, 68, 0.05) !important;
+    border-color: rgba(239, 68, 68, 0.4) !important;
+}
+
+.dashboard-body .kpi-orange:hover {
+    box-shadow: 0 10px 25px rgba(245, 158, 11, 0.22), inset 0 0 12px rgba(245, 158, 11, 0.05) !important;
+    border-color: rgba(245, 158, 11, 0.4) !important;
+}
+
+.dashboard-body .kpi-purple:hover {
+    box-shadow: 0 10px 25px rgba(168, 85, 247, 0.22), inset 0 0 12px rgba(168, 85, 247, 0.05) !important;
+    border-color: rgba(168, 85, 247, 0.4) !important;
+}
+
+.dashboard-body .kpi-green:hover {
+    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.22), inset 0 0 12px rgba(16, 185, 129, 0.05) !important;
+    border-color: rgba(16, 185, 129, 0.4) !important;
+}
+
+/* 2. Interactive Charts & Control Panel Elevation */
+.dashboard-body .chart-card,
+.dashboard-body .terminal-card,
+.dashboard-body .control-card,
+.dashboard-body .logs-section,
+.dashboard-body .card-view {
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dashboard-body .chart-card:hover,
+.dashboard-body .terminal-card:hover,
+.dashboard-body .control-card:hover,
+.dashboard-body .card-view:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35), 0 0 15px rgba(16, 185, 129, 0.06);
+    border-color: rgba(16, 185, 129, 0.22);
+}
+
+.light-theme .chart-card:hover,
+.light-theme .terminal-card:hover,
+.light-theme .control-card:hover,
+.light-theme .card-view:hover {
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.04), 0 0 15px rgba(16, 185, 129, 0.08);
+}
+
+/* 3. Real-Time Log Table Rows Glow Accent and Sliding Borders */
+.dashboard-body tbody tr {
+    transition: all 0.2s ease;
+}
+
+.dashboard-body tbody tr:hover td {
+    background-color: rgba(16, 185, 129, 0.04) !important;
+    color: #ffffff !important;
+}
+
+.light-theme tbody tr:hover td {
+    background-color: rgba(16, 185, 129, 0.05) !important;
+    color: #0f172a !important;
+}
+
+/* Sliding Left Border indicator on first cell of hovered rows */
+.dashboard-body tbody td:first-child {
+    border-left: 3px solid transparent;
+    transition: border-left 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dashboard-body tbody tr:hover td:first-child {
+    border-left: 3px solid var(--accent-mint);
+}
+
+/* 4. Sidebar Link Transitions & Sliding Translate */
+.dashboard-body .menu-item a {
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dashboard-body .menu-item a:hover {
+    transform: translateX(4px);
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #ffffff !important;
+}
+
+.light-theme .menu-item a:hover {
+    color: #0f172a !important;
+    background-color: rgba(16, 185, 129, 0.08);
+}
+
+/* 5. Button Scalers & Interactive Controls */
+.btn-control-sync, 
+.btn-export-csv, 
+.btn-table-action, 
+.btn-logout, 
+.btn-submit {
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.btn-control-sync:hover, 
+.btn-export-csv:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+}
+
+.btn-table-action:hover {
+    transform: scale(1.05);
+}
+
+/* 6. Geographical Heatmap Bubble Pulsar */
+.heatmap-bubble-glow {
+    transform-origin: center;
+    animation: heatmap-bubble-pulse 2s infinite ease-in-out alternate;
+}
+
+@keyframes heatmap-bubble-pulse {
+    0% {
+        opacity: 0.45;
+        r: 14;
+    }
+    100% {
+        opacity: 0.85;
+        r: 22;
+    }
+}
+
