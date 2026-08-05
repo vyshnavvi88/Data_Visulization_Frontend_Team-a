@@ -1509,3 +1509,228 @@ input[type="range"].accent-success {
     to { opacity: 1; }
 }
 
+/* ==========================================================================
+   CONTACT US / TEAM SECTION STYLES
+   ========================================================================== */
+
+.contact-section {
+    animation: chartFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+    margin-top: 28px;
+    perspective: 1000px;
+}
+
+.team-card {
+    background: linear-gradient(135deg, rgba(10, 15, 18, 0.7) 0%, rgba(5, 10, 12, 0.8) 100%);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+}
+
+.team-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent-blue), var(--accent-mint));
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.team-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: rgba(16, 185, 129, 0.35);
+    box-shadow: 0 20px 40px 0 rgba(16, 185, 129, 0.12), 0 0 20px 0 rgba(0, 124, 195, 0.05);
+}
+
+.team-card:hover::before {
+    opacity: 1;
+}
+
+/* Subtle corner light reflections */
+.card-glow-bg {
+    position: absolute;
+    top: -120px;
+    right: -120px;
+    width: 240px;
+    height: 240px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.25) 0%, rgba(0, 124, 195, 0.05) 50%, rgba(0,0,0,0) 70%);
+    filter: blur(40px);
+    z-index: 0;
+    pointer-events: none;
+    transition: all 0.5s ease;
+}
+
+.team-card:hover .card-glow-bg {
+    transform: translate(-20px, 20px) scale(1.15);
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.4) 0%, rgba(0, 124, 195, 0.15) 50%, rgba(0,0,0,0) 70%);
+}
+
+/* Avatar block with interactive rings */
+.member-avatar-wrapper {
+    position: relative;
+    z-index: 2;
+    margin-bottom: 20px;
+}
+
+.member-avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(0, 124, 195, 0.15), rgba(16, 185, 129, 0.15));
+    border: 2px solid rgba(16, 185, 129, 0.2);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    font-weight: 700;
+    font-family: var(--font-mono, monospace);
+    transition: all 0.4s ease;
+    box-shadow: inset 0 0 15px rgba(16, 185, 129, 0.1);
+}
+
+.team-card:hover .member-avatar {
+    border-color: var(--accent-mint);
+    background: linear-gradient(135deg, rgba(0, 124, 195, 0.25), rgba(16, 185, 129, 0.25));
+    box-shadow: inset 0 0 20px rgba(16, 185, 129, 0.2), 0 0 15px rgba(16, 185, 129, 0.25);
+    animation: avatarPulseActive 2.5s infinite;
+}
+
+@keyframes avatarPulseActive {
+    0% { box-shadow: inset 0 0 20px rgba(16, 185, 129, 0.2), 0 0 0 0 rgba(16, 185, 129, 0.4); }
+    70% { box-shadow: inset 0 0 20px rgba(16, 185, 129, 0.2), 0 0 0 12px rgba(16, 185, 129, 0); }
+    100% { box-shadow: inset 0 0 20px rgba(16, 185, 129, 0.2), 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+/* Card details styling */
+.member-details {
+    z-index: 2;
+    width: 100%;
+    flex-grow: 1;
+}
+
+.member-name {
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    margin: 0 0 6px 0;
+    transition: color 0.3s ease;
+}
+
+.team-card:hover .member-name {
+    color: var(--accent-mint);
+}
+
+.member-role {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--accent-mint);
+    letter-spacing: 0.08em;
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+    display: inline-block;
+}
+
+.member-bio {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 24px;
+}
+
+/* Link Action styled like micro-interactive terminal button */
+.member-github-link {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: var(--font-mono, monospace);
+    transition: all 0.3s ease;
+    z-index: 2;
+}
+
+.github-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.github-arrow {
+    transform: translateX(0);
+    transition: transform 0.3s ease;
+    color: var(--text-muted);
+}
+
+.member-github-link:hover {
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+.team-card:hover .member-github-link {
+    border-top-color: rgba(16, 185, 129, 0.15);
+}
+
+.member-github-link:hover .github-arrow {
+    transform: translateX(4px);
+    color: var(--accent-mint);
+}
+
+/* Light Theme Overrides for Contact Us */
+.light-theme .team-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.75) 0%, rgba(248, 250, 252, 0.85) 100%);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(16, 185, 129, 0.15);
+}
+
+.light-theme .team-card:hover {
+    box-shadow: 0 20px 40px rgba(16, 185, 129, 0.15);
+    border-color: rgba(16, 185, 129, 0.4);
+}
+
+.light-theme .card-glow-bg {
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, rgba(0, 124, 195, 0.02) 50%, rgba(0,0,0,0) 70%);
+}
+
+.light-theme .member-avatar {
+    background: linear-gradient(135deg, rgba(0, 124, 195, 0.05), rgba(16, 185, 129, 0.05));
+    border-color: rgba(16, 185, 129, 0.25);
+    color: #0f172a;
+}
+
+.light-theme .member-github-link {
+    border-top-color: rgba(0, 0, 0, 0.05);
+}
+
+.light-theme .team-card:hover .member-github-link {
+    border-top-color: rgba(16, 185, 129, 0.2);
+}
+

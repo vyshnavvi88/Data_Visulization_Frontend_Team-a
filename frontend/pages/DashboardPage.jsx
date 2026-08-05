@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Map, Database, Shield, Settings,
   LogOut, Play, Square, Download, Search, RefreshCw,
   Terminal, ShieldCheck, Sun, Moon, Info, Sliders,
-  UserCheck, ShieldQuestion, Menu
+  UserCheck, ShieldQuestion, Menu, Github, ExternalLink, Mail
 } from 'lucide-react';
 import { getEvents, getStats } from '../services/api';
 import DashboardCharts from '../charts/DashboardCharts';
@@ -909,6 +909,97 @@ export default function DashboardPage({ onNavigate, theme, toggleTheme }) {
     );
   };
 
+  // --- SUB-RENDER 5: CONTACT US TEAM PANEL ---
+  const renderContactUs = () => {
+    const teamMembers = [
+      {
+        name: 'Naveen S',
+        role: 'UI/UX Developer',
+        email: 'naveen9819687@gmail.com',
+        bio: 'Built the auth portal, contact page, and dark mode. Unified and integrated all modular workspaces into the dashboard layout.',
+        avatar: 'NS'
+      },
+      {
+        name: 'Vaishnavi',
+        role: 'Lead UI/UX Developer',
+        email: 'vaishnavisivakumar0505@gmail.com',
+        bio: 'Spearheaded frontend application architecture, layout theme logic, and premium dark/light mode security terminal styles.',
+        avatar: 'V'
+      },
+      {
+        name: 'Priyanga C S',
+        role: 'Data Analyst',
+        email: 'cspriyanga26@gmail.com',
+        bio: 'Created the threat events logging table, search filters, and real-time incident status controls.',
+        avatar: 'P'
+      },
+      {
+        name: 'Devendhar Reddy',
+        role: 'Frontend Developer',
+        email: 'ndreddy2005@gmail.com',
+        bio: 'Contributed to frontend chart layouts, data parsing libraries, and interactive visualization controls.',
+        avatar: 'DR'
+      },
+      {
+        name: 'Sahil Kedare',
+        role: 'Frontend Developer',
+        email: 'kedaresahil70@gmail.com',
+        bio: 'Created interactive charts: Pie chart of severity events, Bar chart of top attack types, and Timeline trend chart for threat distribution over time.',
+        avatar: 'SK'
+      },
+      {
+        name: 'Vasavi',
+        role: 'Frontend Developer',
+        email: 'vasavi.n2004@gmail.com',
+        bio: 'Designed and implemented interactive search and dynamic dropdown filter controls for the analytics data visualization engine.',
+        avatar: 'VA'
+      }
+    ];
+
+    return (
+      <section className="contact-section card-view">
+        <div className="panel-header mb-4">
+          <h3 className="text-white d-flex align-items-center gap-2">
+            <UserCheck className="text-success" />
+            <span>Project Command Center</span>
+          </h3>
+          <p className="text-secondary small">Meet the developer operations team behind the Infosys Threat Detection Suite</p>
+        </div>
+
+        <div className="team-grid">
+          {teamMembers.map((member) => (
+            <div key={member.email} className="team-card">
+              <div className="card-glow-bg"></div>
+              
+              <div className="member-avatar-wrapper">
+                <div className="member-avatar">
+                  {member.avatar}
+                </div>
+              </div>
+
+              <div className="member-details">
+                <h4 className="member-name">{member.name}</h4>
+                <span className="member-role">{member.role}</span>
+                <p className="member-bio">{member.bio}</p>
+              </div>
+
+              <a 
+                href={`mailto:${member.email}`} 
+                className="member-github-link"
+              >
+                <span className="github-label">
+                  <Mail size={16} />
+                  <span>{member.email}</span>
+                </span>
+                <ExternalLink size={14} className="github-arrow" />
+              </a>
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  };
+
 
 
   return (
@@ -977,6 +1068,12 @@ export default function DashboardPage({ onNavigate, theme, toggleTheme }) {
             <a href="#analytics" onClick={(e) => e.preventDefault()}>
               <Activity size={18} />
               <span>Analytics</span>
+            </a>
+          </li>
+          <li className={`menu-item ${activePanel === 'Contact Us' ? 'active' : ''}`} onClick={() => setActivePanel('Contact Us')}>
+            <a href="#contact" onClick={(e) => e.preventDefault()}>
+              <UserCheck size={18} />
+              <span>Contact Us</span>
             </a>
           </li>
         </ul>
@@ -1070,6 +1167,7 @@ export default function DashboardPage({ onNavigate, theme, toggleTheme }) {
         {activePanel === 'Security Events' && renderIncidents()}
         {activePanel === 'Threat Intelligence' && renderThreatMap()}
         {activePanel === 'Vulnerabilities' && renderShieldScans()}
+        {activePanel === 'Contact Us' && renderContactUs()}
         {activePanel === 'Analytics' && (
           <>
             {/* Shared Search and Filters toolbar for Analytics engine */}

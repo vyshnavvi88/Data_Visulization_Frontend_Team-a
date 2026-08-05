@@ -9,6 +9,8 @@
  * by fetching and parsing the local CSV dataset.
  */
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+
 // Helper to parse CSV data into structured objects
 function parseCSV(csvText) {
   if (!csvText || typeof csvText !== 'string') return [];
@@ -101,7 +103,7 @@ async function fetchLocalCSVFallback() {
  */
 export async function getEvents() {
   try {
-    const response = await fetch('/events');
+    const response = await fetch(`${API_BASE_URL}/events`);
     if (response.ok) {
       return await response.json();
     }
@@ -116,7 +118,7 @@ export async function getEvents() {
  */
 export async function getStats() {
   try {
-    const response = await fetch('/stats');
+    const response = await fetch(`${API_BASE_URL}/stats`);
     if (response.ok) {
       return await response.json();
     }
@@ -155,7 +157,7 @@ export async function getStats() {
  */
 export async function getThreats() {
   try {
-    const response = await fetch('/threats');
+    const response = await fetch(`${API_BASE_URL}/threats`);
     if (response.ok) {
       return await response.json();
     }

@@ -58,7 +58,7 @@ export default function SignupPage({ onNavigate, theme, toggleTheme }) {
     }
 
     try {
-      const response = await fetch('/api/signup', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
