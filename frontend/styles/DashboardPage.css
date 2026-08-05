@@ -1450,3 +1450,62 @@ input[type="range"].accent-success {
     }
 }
 
+/* 7. Interactive Filter Chart Loading Overlay */
+.dashboard-body .chart-loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(10, 15, 18, 0.75);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    border-radius: 8px;
+    animation: chartFadeIn 0.25s ease;
+}
+
+.light-theme .chart-loading-overlay {
+    background: rgba(241, 245, 249, 0.75);
+}
+
+.dashboard-body .chart-loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.dashboard-body .chart-loader-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid rgba(16, 185, 129, 0.1);
+    border-top-color: #10b981;
+    border-radius: 50%;
+    animation: chartLoaderSpin 0.8s linear infinite;
+}
+
+.dashboard-body .loader-text {
+    font-size: 11px;
+    color: #10b981;
+    letter-spacing: 2px;
+    font-weight: bold;
+    animation: chartLoaderPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes chartLoaderSpin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes chartLoaderPulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+@keyframes chartFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+

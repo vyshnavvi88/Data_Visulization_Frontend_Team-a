@@ -1150,7 +1150,14 @@ export default function DashboardPage({ onNavigate, theme, toggleTheme }) {
             </div>
 
             <section className="dashboard-charts-wrapper">
-              <DashboardCharts events={filteredEvents} theme={theme} />
+              <DashboardCharts 
+                events={filteredEvents} 
+                theme={theme} 
+                searchQuery={searchQuery}
+                eventTypeFilter={eventTypeFilter}
+                ipFilter={ipFilter}
+                severityFilter={severityFilter}
+              />
             </section>
           </>
         )}

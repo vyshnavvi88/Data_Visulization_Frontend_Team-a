@@ -1,7 +1,34 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Chart from 'chart.js/auto';
 
-export default function DashboardCharts({ events, theme }) {
+export default function DashboardCharts({ 
+  events, 
+  theme,
+  searchQuery = '',
+  eventTypeFilter = 'ALL',
+  ipFilter = 'ALL',
+  severityFilter = 'ALL'
+}) {
+  const [isFiltering, setIsFiltering] = useState(false);
+  const prevFiltersRef = useRef({ searchQuery, eventTypeFilter, ipFilter, severityFilter });
+
+  useEffect(() => {
+    const prev = prevFiltersRef.current;
+    if (
+      prev.searchQuery !== searchQuery ||
+      prev.eventTypeFilter !== eventTypeFilter ||
+      prev.ipFilter !== ipFilter ||
+      prev.severityFilter !== severityFilter
+    ) {
+      setIsFiltering(true);
+      const timer = setTimeout(() => {
+        setIsFiltering(false);
+      }, 450); // 450ms smooth scanning delay
+      prevFiltersRef.current = { searchQuery, eventTypeFilter, ipFilter, severityFilter };
+      return () => clearTimeout(timer);
+    }
+  }, [searchQuery, eventTypeFilter, ipFilter, severityFilter]);
+
   const trendCanvasRef = useRef(null);
   const distCanvasRef = useRef(null);
   const attackCanvasRef = useRef(null);
@@ -361,6 +388,14 @@ export default function DashboardCharts({ events, theme }) {
       {/* Event Trend Chart (Line Chart) */}
       <div className="col-lg-8 col-12">
         <div className="chart-card">
+          {isFiltering && (
+            <div className="chart-loading-overlay">
+              <div className="chart-loader">
+                <div className="chart-loader-spinner"></div>
+                <span className="loader-text font-mono">COMPUTING ANALYTICS...</span>
+              </div>
+            </div>
+          )}
           <div className="chart-card-header">
             <h3 className="chart-card-title text-white">Event Trend Graph</h3>
             <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Incidents timeline</span>
@@ -374,6 +409,14 @@ export default function DashboardCharts({ events, theme }) {
       {/* Threat Distribution (Donut Chart) */}
       <div className="col-lg-4 col-12">
         <div className="chart-card">
+          {isFiltering && (
+            <div className="chart-loading-overlay">
+              <div className="chart-loader">
+                <div className="chart-loader-spinner"></div>
+                <span className="loader-text font-mono">COMPUTING ANALYTICS...</span>
+              </div>
+            </div>
+          )}
           <div className="chart-card-header">
             <h3 className="chart-card-title text-white">Threat Severity</h3>
           </div>
@@ -387,6 +430,14 @@ export default function DashboardCharts({ events, theme }) {
       {/* Top Attack Types (Bar Chart) */}
       <div className="col-lg-6 col-12">
         <div className="chart-card">
+          {isFiltering && (
+            <div className="chart-loading-overlay">
+              <div className="chart-loader">
+                <div className="chart-loader-spinner"></div>
+                <span className="loader-text font-mono">COMPUTING ANALYTICS...</span>
+              </div>
+            </div>
+          )}
           <div className="chart-card-header">
             <h3 className="chart-card-title text-white">Top Attack Types</h3>
           </div>
@@ -399,6 +450,14 @@ export default function DashboardCharts({ events, theme }) {
       {/* Top Affected Assets Widget */}
       <div className="col-lg-6 col-12">
         <div className="chart-card">
+          {isFiltering && (
+            <div className="chart-loading-overlay">
+              <div className="chart-loader">
+                <div className="chart-loader-spinner"></div>
+                <span className="loader-text font-mono">COMPUTING ANALYTICS...</span>
+              </div>
+            </div>
+          )}
           <div className="chart-card-header">
             <h3 className="chart-card-title text-white">Top Affected Assets</h3>
             <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Most targeted hosts</span>
