@@ -916,7 +916,7 @@ export default function DashboardPage({ onNavigate, theme, toggleTheme }) {
         name: 'Naveen S',
         role: 'UI/UX Developer',
         email: 'naveen9819687@gmail.com',
-        bio: 'Built the auth portal, contact page, and dark mode. Unified and integrated all modular workspaces into the dashboard layout.',
+        bio: 'Designed the overall UI. Built the auth portal, contact page, and dark mode. Unified and integrated all modular workspaces into the dashboard layout.',
         avatar: 'NS'
       },
       {
@@ -953,6 +953,20 @@ export default function DashboardPage({ onNavigate, theme, toggleTheme }) {
         email: '324103210088.vyshnavvi@gvpcew.ac.in',
         bio: 'Responsible for backend data cleaning, parsing incoming security logs, and formatting MongoDB documents for telemetry queries.',
         avatar: 'LV'
+      },
+      {
+        name: 'Prasanth Gannavarapu',
+        role: 'Backend Developer',
+        email: 'prasanthgannavarapu20@gmail.com',
+        bio: 'Responsible for database architecture, establishing MongoDB connections, and ensuring robust query handling.',
+        avatar: 'PG'
+      },
+      {
+        name: 'Suriyakumar P',
+        role: 'Fullstack Developer',
+        email: '953623244051@ritrjpm.ac.in',
+        bio: 'Worked on building REST API endpoints, handling authentication routes, and aligning frontend requests with server response bodies.',
+        avatar: 'SP'
       }
     ];
 
