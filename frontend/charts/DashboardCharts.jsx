@@ -5,17 +5,19 @@ export default function DashboardCharts({
   events, 
   theme,
   searchQuery = '',
+  dateFilter = 'ALL',
   eventTypeFilter = 'ALL',
   ipFilter = 'ALL',
   severityFilter = 'ALL'
 }) {
   const [isFiltering, setIsFiltering] = useState(false);
-  const prevFiltersRef = useRef({ searchQuery, eventTypeFilter, ipFilter, severityFilter });
+  const prevFiltersRef = useRef({ searchQuery, dateFilter, eventTypeFilter, ipFilter, severityFilter });
 
   useEffect(() => {
     const prev = prevFiltersRef.current;
     if (
       prev.searchQuery !== searchQuery ||
+      prev.dateFilter !== dateFilter ||
       prev.eventTypeFilter !== eventTypeFilter ||
       prev.ipFilter !== ipFilter ||
       prev.severityFilter !== severityFilter
@@ -24,10 +26,10 @@ export default function DashboardCharts({
       const timer = setTimeout(() => {
         setIsFiltering(false);
       }, 450); // 450ms smooth scanning delay
-      prevFiltersRef.current = { searchQuery, eventTypeFilter, ipFilter, severityFilter };
+      prevFiltersRef.current = { searchQuery, dateFilter, eventTypeFilter, ipFilter, severityFilter };
       return () => clearTimeout(timer);
     }
-  }, [searchQuery, eventTypeFilter, ipFilter, severityFilter]);
+  }, [searchQuery, dateFilter, eventTypeFilter, ipFilter, severityFilter]);
 
   const trendCanvasRef = useRef(null);
   const distCanvasRef = useRef(null);

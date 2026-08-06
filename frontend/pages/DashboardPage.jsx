@@ -28,6 +28,7 @@ export default function DashboardPage({ onNavigate, theme, toggleTheme }) {
   // Filters State
   const [searchQuery, setSearchQuery] = useState('');
   const [severityFilter, setSeverityFilter] = useState('ALL');
+  const [dateFilter, setDateFilter] = useState('ALL');
   const [eventTypeFilter, setEventTypeFilter] = useState('ALL');
   const [ipFilter, setIpFilter] = useState('ALL');
   
@@ -138,10 +139,12 @@ export default function DashboardPage({ onNavigate, theme, toggleTheme }) {
         }
 
         const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+        const isoTimestamp = new Date().toISOString();
         const newIncident = {
           id: Date.now(),
           time: time,
-          timestamp: time,
+          timestamp: isoTimestamp,
+          date: isoTimestamp.slice(0, 10),
           name: template.name,
           event_type: template.event_type,
           source: template.source,
@@ -260,7 +263,22 @@ export default function DashboardPage({ onNavigate, theme, toggleTheme }) {
 
   // Filter calculations
   const uniqueEventTypes = ['ALL', ...new Set(events.map(e => e.name || e.event_type).filter(Boolean))];
-  const uniqueSourceIps = ['ALL', ...new Set(events.map(e => e.source || e.source_ip).filter(Boolean))];
+  const uniqueDates = [
+    'ALL',
+    ...new Set(
+      events
+        .map((e) => (e.date || e.timestamp || '').toString().slice(0, 10))
+        .filter((value) => value && value !== 'Invalid Date')
+    )
+  ].sort((a, b) => (a === 'ALL' ? -1 : b === 'ALL' ? 1 : b.localeCompare(a)));
+  const uniqueIpAddresses = [
+    'ALL',
+    ...new Set(
+      events
+        .flatMap((e) => [e.source || e.source_ip, e.target || e.destination_ip])
+        .filter(Boolean)
+    )
+  ];
 
   const filteredEvents = events.filter((evt) => {
     const nameStr = (evt.name || evt.event_type || '').toLowerCase();
@@ -279,10 +297,12 @@ export default function DashboardPage({ onNavigate, theme, toggleTheme }) {
       else if (severityFilter === 'RESOLVED') matchesSeverity = evt.status === 'RESOLVED';
     }
 
+    const eventDate = (evt.date || evt.timestamp || '').toString().slice(0, 10);
+    const matchesDate = dateFilter === 'ALL' || eventDate === dateFilter;
     const matchesEventType = eventTypeFilter === 'ALL' || (evt.name || evt.event_type) === eventTypeFilter;
-    const matchesIp = ipFilter === 'ALL' || (evt.source || evt.source_ip) === ipFilter;
+    const matchesIp = ipFilter === 'ALL' || (evt.source || evt.source_ip) === ipFilter || (evt.target || evt.destination_ip) === ipFilter;
 
-    return matchesSearch && matchesSeverity && matchesEventType && matchesIp;
+    return matchesSearch && matchesSeverity && matchesDate && matchesEventType && matchesIp;
   });
 
   const handleExportCSV = () => {
@@ -458,6 +478,18 @@ export default function DashboardPage({ onNavigate, theme, toggleTheme }) {
             </div>
 
             <div className="dropdown-filters d-flex gap-2">
+                  <select 
+                    value={dateFilter}
+                    onChange={(e) => setDateFilter(e.target.value)}
+                    className="filter-select"
+                    title="Date"
+                  >
+                    <option value="ALL">All Dates</option>
+                    {uniqueDates.filter(date => date !== 'ALL').map(date => (
+                      <option key={date} value={date}>{date}</option>
+                    ))}
+                  </select>
+
               <select 
                 value={eventTypeFilter}
                 onChange={(e) => setEventTypeFilter(e.target.value)}
@@ -916,7 +948,7 @@ export default function DashboardPage({ onNavigate, theme, toggleTheme }) {
         name: 'Naveen S',
         role: 'UI/UX Developer',
         email: 'naveen9819687@gmail.com',
-        bio: 'Designed the overall UI. Built the auth portal, contact page, and dark mode. Unified and integrated all modular workspaces into the dashboard layout.',
+        bio: 'Built the auth portal, contact page, and dark mode. Unified and integrated all modular workspaces into the dashboard layout.',
         avatar: 'NS'
       },
       {
@@ -953,20 +985,6 @@ export default function DashboardPage({ onNavigate, theme, toggleTheme }) {
         email: '324103210088.vyshnavvi@gvpcew.ac.in',
         bio: 'Responsible for backend data cleaning, parsing incoming security logs, and formatting MongoDB documents for telemetry queries.',
         avatar: 'LV'
-      },
-      {
-        name: 'Prasanth Gannavarapu',
-        role: 'Backend Developer',
-        email: 'prasanthgannavarapu20@gmail.com',
-        bio: 'Responsible for database architecture, establishing MongoDB connections, and ensuring robust query handling.',
-        avatar: 'PG'
-      },
-      {
-        name: 'Suriyakumar P',
-        role: 'Fullstack Developer',
-        email: '953623244051@ritrjpm.ac.in',
-        bio: 'Worked on building REST API endpoints, handling authentication routes, and aligning frontend requests with server response bodies.',
-        avatar: 'SP'
       }
     ];
 
@@ -1207,6 +1225,18 @@ export default function DashboardPage({ onNavigate, theme, toggleTheme }) {
 
                   <div className="dropdown-filters d-flex gap-2">
                     <select 
+                      value={dateFilter}
+                      onChange={(e) => setDateFilter(e.target.value)}
+                      className="filter-select"
+                      title="Date"
+                    >
+                      <option value="ALL">All Dates</option>
+                      {uniqueDates.filter(date => date !== 'ALL').map(date => (
+                        <option key={date} value={date}>{date}</option>
+                      ))}
+                    </select>
+
+                    <select 
                       value={eventTypeFilter}
                       onChange={(e) => setEventTypeFilter(e.target.value)}
                       className="filter-select"
@@ -1222,10 +1252,10 @@ export default function DashboardPage({ onNavigate, theme, toggleTheme }) {
                       value={ipFilter}
                       onChange={(e) => setIpFilter(e.target.value)}
                       className="filter-select"
-                      title="Source IP"
+                      title="IP Address"
                     >
-                      <option value="ALL">All Source IPs</option>
-                      {uniqueSourceIps.filter(ip => ip !== 'ALL').map(ip => (
+                      <option value="ALL">All IP Addresses</option>
+                      {uniqueIpAddresses.filter(ip => ip !== 'ALL').map(ip => (
                         <option key={ip} value={ip}>{ip}</option>
                       ))}
                     </select>
@@ -1266,6 +1296,7 @@ export default function DashboardPage({ onNavigate, theme, toggleTheme }) {
                 events={filteredEvents} 
                 theme={theme} 
                 searchQuery={searchQuery}
+                dateFilter={dateFilter}
                 eventTypeFilter={eventTypeFilter}
                 ipFilter={ipFilter}
                 severityFilter={severityFilter}
