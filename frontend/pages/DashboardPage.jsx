@@ -946,6 +946,13 @@ export default function DashboardPage({ onNavigate, theme, toggleTheme }) {
         email: 'vasavi.n2004@gmail.com',
         bio: 'Designed and implemented interactive search and dynamic dropdown filter controls for the analytics data visualization engine.',
         avatar: 'VA'
+      },
+      {
+        name: 'LAXMI VYSHNAVVI',
+        role: 'Backend Developer',
+        email: '324103210088.vyshnavvi@gvpcew.ac.in',
+        bio: 'Responsible for backend data cleaning, parsing incoming security logs, and formatting MongoDB documents for telemetry queries.',
+        avatar: 'LV'
       }
     ];
 
