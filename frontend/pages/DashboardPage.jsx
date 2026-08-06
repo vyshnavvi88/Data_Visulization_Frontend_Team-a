@@ -920,15 +920,8 @@ export default function DashboardPage({ onNavigate, theme, toggleTheme }) {
         avatar: 'NS'
       },
       {
-        name: 'Vaishnavi',
-        role: 'Lead UI/UX Developer',
-        email: 'vaishnavisivakumar0505@gmail.com',
-        bio: 'Spearheaded frontend application architecture, layout theme logic, and premium dark/light mode security terminal styles.',
-        avatar: 'V'
-      },
-      {
         name: 'Priyanga C S',
-        role: 'Data Analyst',
+        role: 'Frontend Developer',
         email: 'cspriyanga26@gmail.com',
         bio: 'Created the threat events logging table, search filters, and real-time incident status controls.',
         avatar: 'P'
