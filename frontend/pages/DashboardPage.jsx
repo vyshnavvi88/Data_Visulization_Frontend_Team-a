@@ -96,6 +96,7 @@ export default function DashboardPage({ onNavigate, theme = 'dark', toggleTheme 
   // Filters State
   const [searchQuery, setSearchQuery] = useState('');
   const [severityFilter, setSeverityFilter] = useState('ALL');
+  const [dateFilter, setDateFilter] = useState('ALL');
   const [eventTypeFilter, setEventTypeFilter] = useState('ALL');
   const [ipFilter, setIpFilter] = useState('ALL');
 
@@ -253,19 +254,21 @@ export default function DashboardPage({ onNavigate, theme = 'dark', toggleTheme 
         }
 
         const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+        const isoTimestamp = new Date().toISOString();
         const prediction = template.severity === 'CRITICAL' ? 'Critical' : 'Suspicious';
         const confidence = template.severity === 'CRITICAL' ? 95 : 78;
         const reasons = [
           `${template.name} triggered anomaly alert`,
           `Targeting enterprise asset ${template.target}`,
           `High risk activity signature matched`
-        ];
+      ];
 
         const newIncident = {
           id: `EVT-${Date.now().toString().slice(-4)}`,
           event_id: `EVT-${Date.now().toString().slice(-4)}`,
           time: time,
-          timestamp: time,
+          timestamp: isoTimestamp,
+          date: isoTimestamp.slice(0, 10),
           name: template.name,
           event_type: template.event_type,
           source: template.source,
@@ -443,7 +446,22 @@ export default function DashboardPage({ onNavigate, theme = 'dark', toggleTheme 
 
   // Filter calculations
   const uniqueEventTypes = ['ALL', ...new Set(events.map(e => e.name || e.event_type).filter(Boolean))];
-  const uniqueSourceIps = ['ALL', ...new Set(events.map(e => e.source || e.source_ip).filter(Boolean))];
+  const uniqueDates = [
+    'ALL',
+    ...new Set(
+      events
+        .map((e) => (e.date || e.timestamp || '').toString().slice(0, 10))
+        .filter((value) => value && value !== 'Invalid Date')
+    )
+  ].sort((a, b) => (a === 'ALL' ? -1 : b === 'ALL' ? 1 : b.localeCompare(a)));
+  const uniqueIpAddresses = [
+    'ALL',
+    ...new Set(
+      events
+        .flatMap((e) => [e.source || e.source_ip, e.target || e.destination_ip])
+        .filter(Boolean)
+    )
+  ];
 
   const filteredEvents = events.filter((evt) => {
     const nameStr = (evt.name || evt.event_type || '').toLowerCase();
@@ -462,9 +480,14 @@ export default function DashboardPage({ onNavigate, theme = 'dark', toggleTheme 
       else if (severityFilter === 'RESOLVED') matchesSeverity = evt.status === 'RESOLVED';
     }
 
+    const eventDate = (evt.date || evt.timestamp || '').toString().slice(0, 10);
+    const matchesDate = dateFilter === 'ALL' || eventDate === dateFilter;
     const matchesEventType = eventTypeFilter === 'ALL' || (evt.name || evt.event_type) === eventTypeFilter;
-    const matchesIp = ipFilter === 'ALL' || (evt.source || evt.source_ip) === ipFilter;
+    const matchesIp = ipFilter === 'ALL' || (evt.source || evt.source_ip) === ipFilter || (evt.target || evt.destination_ip) === ipFilter;
 
+<<<<<<< HEAD
+    return matchesSearch && matchesSeverity && matchesDate && matchesEventType && matchesIp;
+=======
     let matchesHeatmapDate = true;
     if (selectedHeatmapDate) {
       let evtDate;
@@ -485,6 +508,7 @@ export default function DashboardPage({ onNavigate, theme = 'dark', toggleTheme 
     }
 
     return matchesSearch && matchesSeverity && matchesEventType && matchesIp && matchesHeatmapDate;
+>>>>>>> upstream/main
   });
 
   const handleExportCSV = () => {
@@ -2295,6 +2319,18 @@ export default function DashboardPage({ onNavigate, theme = 'dark', toggleTheme 
             )}
 
             <div className="dropdown-filters d-flex gap-2">
+                  <select 
+                    value={dateFilter}
+                    onChange={(e) => setDateFilter(e.target.value)}
+                    className="filter-select"
+                    title="Date"
+                  >
+                    <option value="ALL">All Dates</option>
+                    {uniqueDates.filter(date => date !== 'ALL').map(date => (
+                      <option key={date} value={date}>{date}</option>
+                    ))}
+                  </select>
+
               <select 
                 value={eventTypeFilter}
                 onChange={(e) => setEventTypeFilter(e.target.value)}
@@ -2996,6 +3032,14 @@ export default function DashboardPage({ onNavigate, theme = 'dark', toggleTheme 
   // --- SUB-RENDER 5: CONTACT US TEAM PANEL ---
   const renderContactUs = () => {
     const teamMembers = [
+<<<<<<< HEAD
+      {
+        name: 'Naveen S',
+        role: 'UI/UX Developer',
+        email: 'naveen9819687@gmail.com',
+        bio: 'Built the auth portal, contact page, and dark mode. Unified and integrated all modular workspaces into the dashboard layout.',
+        avatar: 'NS'
+=======
       { 
         name: 'Naveen S',            
         role: 'UI/UX Developer',       
@@ -3007,6 +3051,7 @@ export default function DashboardPage({ onNavigate, theme = 'dark', toggleTheme 
         avatar: 'NS', 
         color: '#10b981', 
         index: 0 
+>>>>>>> upstream/main
       },
       { 
         name: 'Priyanga C S',        
@@ -3056,6 +3101,15 @@ export default function DashboardPage({ onNavigate, theme = 'dark', toggleTheme 
         color: '#ec4899', 
         index: 4 
       },
+<<<<<<< HEAD
+      {
+        name: 'LAXMI VYSHNAVVI',
+        role: 'Backend Developer',
+        email: '324103210088.vyshnavvi@gvpcew.ac.in',
+        bio: 'Responsible for backend data cleaning, parsing incoming security logs, and formatting MongoDB documents for telemetry queries.',
+        avatar: 'LV'
+      }
+=======
       { 
         name: 'Vaishnavi S',         
         role: 'Frontend Developer',    
@@ -3104,6 +3158,7 @@ export default function DashboardPage({ onNavigate, theme = 'dark', toggleTheme 
         color: '#a78bfa', 
         index: 8 
       },
+>>>>>>> upstream/main
     ];
 
     const colorToRgb = (hex) => {
@@ -4307,6 +4362,44 @@ export default function DashboardPage({ onNavigate, theme = 'dark', toggleTheme 
                     <span className="kpi-display">Total logged security network events</span>
                   </div>
 
+<<<<<<< HEAD
+                  <div className="dropdown-filters d-flex gap-2">
+                    <select 
+                      value={dateFilter}
+                      onChange={(e) => setDateFilter(e.target.value)}
+                      className="filter-select"
+                      title="Date"
+                    >
+                      <option value="ALL">All Dates</option>
+                      {uniqueDates.filter(date => date !== 'ALL').map(date => (
+                        <option key={date} value={date}>{date}</option>
+                      ))}
+                    </select>
+
+                    <select 
+                      value={eventTypeFilter}
+                      onChange={(e) => setEventTypeFilter(e.target.value)}
+                      className="filter-select"
+                      title="Event Type"
+                    >
+                      <option value="ALL">All Event Types</option>
+                      {uniqueEventTypes.filter(t => t !== 'ALL').map(t => (
+                        <option key={t} value={t}>{t}</option>
+                      ))}
+                    </select>
+
+                    <select 
+                      value={ipFilter}
+                      onChange={(e) => setIpFilter(e.target.value)}
+                      className="filter-select"
+                      title="IP Address"
+                    >
+                      <option value="ALL">All IP Addresses</option>
+                      {uniqueIpAddresses.filter(ip => ip !== 'ALL').map(ip => (
+                        <option key={ip} value={ip}>{ip}</option>
+                      ))}
+                    </select>
+=======
                   <div className="kpi-card kpi-red">
                     <div className="kpi-card-header">
                       <span className="kpi-title">Anomalies Detected</span>
@@ -4314,6 +4407,7 @@ export default function DashboardPage({ onNavigate, theme = 'dark', toggleTheme 
                     </div>
                     <h2 className="kpi-value">{(stats.anomaliesDetected || 0).toLocaleString()}</h2>
                     <span className="kpi-display">Total AI-flagged anomaly logs</span>
+>>>>>>> upstream/main
                   </div>
 
                   <div className="kpi-card kpi-green">
@@ -4421,6 +4515,19 @@ export default function DashboardPage({ onNavigate, theme = 'dark', toggleTheme 
                   </div>
                 </div>
 
+<<<<<<< HEAD
+            <section className="dashboard-charts-wrapper">
+              <DashboardCharts 
+                events={filteredEvents} 
+                theme={theme} 
+                searchQuery={searchQuery}
+                dateFilter={dateFilter}
+                eventTypeFilter={eventTypeFilter}
+                ipFilter={ipFilter}
+                severityFilter={severityFilter}
+              />
+            </section>
+=======
                 <section className="dashboard-charts-wrapper mb-4">
                   <DashboardCharts 
                     events={filteredEvents} 
@@ -4435,6 +4542,7 @@ export default function DashboardPage({ onNavigate, theme = 'dark', toggleTheme 
                 {renderMLAnomalies()}
               </>
             )}
+>>>>>>> upstream/main
           </>
         )}
       </main>
